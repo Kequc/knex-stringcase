@@ -1,0 +1,33 @@
+{
+  "name": "knex-stringcase",
+  "version": "0.1.0",
+  "description": "Helper switches key case for npm knex",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kequc/knex-stringcase.git"
+  },
+  "keywords": [
+    "knex",
+    "knexjs",
+    "camelcase",
+    "snakecase"
+  ],
+  "author": "Nathan Lunde-Berry",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kequc/knex-stringcase/issues"
+  },
+  "homepage": "https://github.com/Kequc/knex-stringcase#readme",
+  "devDependencies": {
+    "eslint": "^4.5.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.7.0"
+  },
+  "dependencies": {
+    "stringcase": "^4.1.0"
+  }
+}
