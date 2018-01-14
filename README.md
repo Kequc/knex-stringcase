@@ -2,7 +2,7 @@
 
 **Used with [npm knex](https://www.npmjs.com/package/knex) to convert database column names for use by a node application.**
 
-By default this library assumes your database columns to use snakecase `my_key` and your node application uses camelcase `myKey`, however these settings can be modified.
+By default this library assumes your database columns use snakecase `my_key` and your node application uses camelcase `myKey`, however these settings can be changed.
 
 ## Why
 
@@ -54,8 +54,6 @@ const configFromKnexReadme = {
 const options = knexStringcase(configFromKnexReadme);
 const db = knex(options);
 ```
-
-All regular knex config options are unchanged. The two that this library decorates are extended and work as though you passed them directly.
 
 The two knex config options this library overrides are `postProcessResponse` and `wrapIdentifier`. If you provide those options they will be run after string conversion has already taken place. If you wish to run before conversion has taken place use `beforePostProcessResponse` and `beforeWrapIdentifier` instead.
 
