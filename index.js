@@ -11,7 +11,7 @@ const convert = (converters, value) => {
 };
 
 const keyConvert = (converters) => (row) => {
-    if (!row) return row;
+    if (!row || row.constructor.name.toLowerCase() !== "object") return row;
 
     const result = {};
 
