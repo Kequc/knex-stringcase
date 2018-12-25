@@ -1,6 +1,6 @@
 {
   "name": "knex-stringcase",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Helper switches key case for npm knex",
   "main": "index.js",
   "scripts": {
