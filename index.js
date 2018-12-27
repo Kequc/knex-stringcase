@@ -1,5 +1,7 @@
 const getConverters = require('./get-converters');
 
+const noOperation = v => v;
+
 const convert = (converters, value) => {
     let result = value;
 
@@ -23,11 +25,11 @@ const keyConvert = (converters) => (row) => {
     return result;
 };
 
-const postProcessResponse = (converters, before, after) => (raw) => {
+const postProcessResponse = (converters, before, after) => (raw, queryContext = {}) => {
     let result = raw;
 
     if (typeof before === 'function') {
-        result = before(result);
+        result = before(result, queryContext);
     }
 
     if (Array.isArray(result)) {
@@ -37,23 +39,23 @@ const postProcessResponse = (converters, before, after) => (raw) => {
     }
 
     if (typeof after === 'function') {
-        result = after(result);
+        result = after(result, queryContext);
     }
 
     return result;
 };
 
-const wrapIdentifier = (converters, before, after) => (value, origImpl) => {
+const wrapIdentifier = (converters, before, after) => (value, origImpl, queryContext = {}) => {
     let result = value;
 
     if (typeof before === 'function') {
-        result = before(result);
+        result = before(result, noOperation, queryContext);
     }
 
     result = convert(converters, result);
 
     if (typeof after === 'function') {
-        result = after(result, origImpl);
+        result = after(result, origImpl, queryContext);
     } else {
         result = origImpl(result);
     }
