@@ -1,7 +1,5 @@
 const getConverters = require('./get-converters');
 
-const noOperation = v => v;
-
 const convert = (converters, value) => {
     let result = value;
 
@@ -49,7 +47,7 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
     let result = value;
 
     if (typeof before === 'function') {
-        result = before(result, noOperation, queryContext);
+        result = before(result, queryContext);
     }
 
     result = convert(converters, result);
