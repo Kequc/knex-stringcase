@@ -59,11 +59,11 @@ The two knex config options this library overrides are `postProcessResponse` and
 
 ## New options
 
-#### beforePostProcessResponse (value: string) => string
+#### beforePostProcessResponse (value: string, queryContext: object) => string
 
 A function which runs before modifications made by this library if needed.
 
-#### beforeWrapIdentifier (value: string) => string
+#### beforeWrapIdentifier (value: string, queryContext: object) => string
 
 A function which runs before modifications made by this library if needed.
 
