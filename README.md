@@ -59,7 +59,7 @@ The two knex config options this library overrides are `postProcessResponse` and
 
 ## New options
 
-#### beforePostProcessResponse (value: string, queryContext: object) => string
+#### beforePostProcessResponse (result: array|object, queryContext: object) => array|object
 
 A function which runs before modifications made by this library if needed.
 
