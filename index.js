@@ -23,42 +23,42 @@ const keyConvert = (converters) => (row) => {
     return result;
 };
 
-const postProcessResponse = (converters, before, after) => (raw, queryContext = {}) => {
-    let result = raw;
+const postProcessResponse = (converters, before, after) => (result, queryContext) => {
+    let output = result;
 
     if (typeof before === 'function') {
-        result = before(result, queryContext);
+        output = before(output, queryContext);
     }
 
-    if (Array.isArray(result)) {
-        result = result.map(keyConvert(converters));
+    if (Array.isArray(output)) {
+        output = output.map(keyConvert(converters));
     } else {
-        result = keyConvert(converters)(result);
+        output = keyConvert(converters)(output);
     }
 
     if (typeof after === 'function') {
-        result = after(result, queryContext);
+        output = after(output, queryContext);
     }
 
-    return result;
+    return output;
 };
 
-const wrapIdentifier = (converters, before, after) => (value, origImpl, queryContext = {}) => {
-    let result = value;
+const wrapIdentifier = (converters, before, after) => (value, origImpl, queryContext) => {
+    let output = value;
 
     if (typeof before === 'function') {
-        result = before(result, queryContext);
+        output = before(output, queryContext);
     }
 
-    result = convert(converters, result);
+    output = convert(converters, output);
 
     if (typeof after === 'function') {
-        result = after(result, origImpl, queryContext);
+        output = after(output, origImpl, queryContext);
     } else {
-        result = origImpl(result);
+        output = origImpl(output);
     }
 
-    return result;
+    return output;
 };
 
 module.exports = (config) => {
