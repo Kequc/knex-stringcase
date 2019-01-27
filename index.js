@@ -1,26 +1,26 @@
 const getConverters = require('./get-converters');
 
-const convert = (converters, value) => {
-    let result = value;
+module.exports = (config) => {
+    const options = Object.assign({}, config); // clone
 
-    for (const converter of converters) {
-        result = converter(result);
-    }
+    delete options.dbStringcase;
+    delete options.appStringcase;
+    delete options.beforePostProcessResponse;
+    delete options.beforeWrapIdentifier;
 
-    return result;
-};
+    options.postProcessResponse = postProcessResponse(
+        getConverters(config.appStringcase || 'camelcase'),
+        config.beforePostProcessResponse,
+        config.postProcessResponse
+    );
 
-const keyConvert = (converters) => (row) => {
-    if (!(row instanceof Object)) return row;
+    options.wrapIdentifier = wrapIdentifier(
+        getConverters(config.dbStringcase || 'snakecase'),
+        config.beforeWrapIdentifier,
+        config.wrapIdentifier
+    );
 
-    const result = {};
-
-    for (const key of Object.keys(row)) {
-        const converted = convert(converters, key);
-        result[converted] = row[key];
-    }
-
-    return result;
+    return options;
 };
 
 const postProcessResponse = (converters, before, after) => (result, queryContext) => {
@@ -61,25 +61,25 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
     return output;
 };
 
-module.exports = (config) => {
-    const options = Object.assign({}, config); // clone
+const keyConvert = (converters) => (row) => {
+    if (!(row instanceof Object)) return row;
 
-    delete options.dbStringcase;
-    delete options.appStringcase;
-    delete options.beforePostProcessResponse;
-    delete options.beforeWrapIdentifier;
+    const result = {};
 
-    options.postProcessResponse = postProcessResponse(
-        getConverters(config.appStringcase || 'camelcase'),
-        config.beforePostProcessResponse,
-        config.postProcessResponse
-    );
+    for (const key of Object.keys(row)) {
+        const converted = convert(converters, key);
+        result[converted] = row[key];
+    }
 
-    options.wrapIdentifier = wrapIdentifier(
-        getConverters(config.dbStringcase || 'snakecase'),
-        config.beforeWrapIdentifier,
-        config.wrapIdentifier
-    );
+    return result;
+};
 
-    return options;
+const convert = (converters, value) => {
+    let result = value;
+
+    for (const converter of converters) {
+        result = converter(result);
+    }
+
+    return result;
 };
