@@ -1,6 +1,6 @@
 {
   "name": "knex-stringcase",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Helper switches key case for npm knex",
   "main": "index.js",
   "scripts": {
@@ -23,9 +23,7 @@
   },
   "homepage": "https://github.com/Kequc/knex-stringcase#readme",
   "devDependencies": {
-    "eslint": "^4.5.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.7.0"
+    "eslint": "^4.5.0"
   },
   "dependencies": {
     "stringcase": "^4.1.0"
