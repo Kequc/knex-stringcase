@@ -1,6 +1,6 @@
-const getConverters = require('./get-converters');
+const getConverters = require('./get-converters.js');
 
-module.exports = (config) => {
+module.exports = (config = {}) => {
     const options = Object.assign({}, config); // clone
 
     delete options.dbStringcase;
