@@ -26,6 +26,6 @@
     "eslint": "^4.5.0"
   },
   "dependencies": {
-    "stringcase": "^4.1.0"
+    "stringcase": "^4.3.0"
   }
 }
