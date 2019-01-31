@@ -1,6 +1,6 @@
-jest.mock('./get-converters.js', () => () => [(value) => value + '-converted']);
+jest.mock('../src/get-converters.js', () => () => [(value) => value + '-converted']);
 
-const knexStringcase = require('./index.js');
+const knexStringcase = require('../src/index.js');
 
 test('returns configured options', () => {
     const options = knexStringcase();

@@ -4,7 +4,7 @@ jest.mock('stringcase', () => ({
 }));
 
 const stringcase = require('stringcase');
-const getConverters = require('./get-converters.js');
+const getConverters = require('../src/get-converters.js');
 
 test('returns array of functions from function', () => {
     function fakeconverter () {}
