@@ -63,15 +63,20 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
 
 const keyConvert = (converters) => (row) => {
     if (!(row instanceof Object)) return row;
+    return recursiveKeyConvert(row, converters);
+};
 
-    const result = {};
-
+function recursiveKeyConvert(row, converters) {
+    const result = {}
     for (const key of Object.keys(row)) {
         const converted = convert(converters, key);
-        result[converted] = row[key];
+        if (row[key] instanceof Object) {
+            result[converted] = recursiveKeyConvert(row[key], converters)
+        } else {
+            result[converted] = row[key];
+        }
     }
-
-    return result;
+    return result
 };
 
 const convert = (converters, value) => {
