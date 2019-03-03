@@ -30,11 +30,7 @@ const postProcessResponse = (converters, before, after) => (result, queryContext
         output = before(output, queryContext);
     }
 
-    if (Array.isArray(output)) {
-        output = output.map(keyConvert(converters));
-    } else {
-        output = keyConvert(converters)(output);
-    }
+    output = keyConvert(converters, output);
 
     if (typeof after === 'function') {
         output = after(output, queryContext);
@@ -61,14 +57,15 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
     return output;
 };
 
-const keyConvert = (converters) => (row) => {
-    if (!(row instanceof Object)) return row;
+const keyConvert = (converters, obj) => {
+    if (!(obj instanceof Object)) return obj;
+    if (Array.isArray(obj)) return obj.map(item => keyConvert(converters, item));
 
     const result = {};
 
-    for (const key of Object.keys(row)) {
+    for (const key of Object.keys(obj)) {
         const converted = convert(converters, key);
-        result[converted] = row[key];
+        result[converted] = keyConvert(converters, obj[key]);
     }
 
     return result;
