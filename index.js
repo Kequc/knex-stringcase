@@ -57,8 +57,9 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
     return output;
 };
 
-const keyConvert = (converters, obj) => {
+function keyConvert (converters, obj) {
     if (!(obj instanceof Object)) return obj;
+    if (obj instanceof Date) return obj;
     if (Array.isArray(obj)) return obj.map(item => keyConvert(converters, item));
 
     const result = {};
@@ -69,9 +70,9 @@ const keyConvert = (converters, obj) => {
     }
 
     return result;
-};
+}
 
-const convert = (converters, value) => {
+function convert (converters, value) {
     let result = value;
 
     for (const converter of converters) {
@@ -79,4 +80,4 @@ const convert = (converters, value) => {
     }
 
     return result;
-};
+}
