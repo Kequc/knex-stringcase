@@ -81,7 +81,7 @@ A function or a string which describes how keys should re-enter your application
 
 A function which can be used to skip conversion on objects if needed. If true the object is not converted and will be returned as is. This is useful in case you are using moment for your dates for example.
 
-`obj => obj.isMoment`
+`obj => moment.isMoment(obj)`
 
 ## Contribute
 
