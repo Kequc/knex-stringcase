@@ -4,8 +4,12 @@
     "description": "Helper switches key case for npm knex",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "node test.js"
     },
+    "files": [
+        "get-converters.js",
+        "index.js"
+    ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Kequc/knex-stringcase.git"
