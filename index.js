@@ -7,13 +7,11 @@ module.exports = (config = {}) => {
     delete options.beforeWrapIdentifier;
     delete options.dbStringcase;
     delete options.appStringcase;
-    delete options.ignoreStringcase;
 
     options.postProcessResponse = postProcessResponse(
         getConverters(config.appStringcase || 'camelcase'),
         config.beforePostProcessResponse,
-        config.postProcessResponse,
-        config.ignoreStringcase
+        config.postProcessResponse
     );
 
     options.wrapIdentifier = wrapIdentifier(
@@ -25,14 +23,14 @@ module.exports = (config = {}) => {
     return options;
 };
 
-const postProcessResponse = (converters, before, after, ignore) => (result, queryContext) => {
+const postProcessResponse = (converters, before, after) => (result, queryContext) => {
     let output = result;
 
     if (typeof before === 'function') {
         output = before(output, queryContext);
     }
 
-    output = keyConvert(converters, output, ignore);
+    output = keyConvert(converters, output);
 
     if (typeof after === 'function') {
         output = after(output, queryContext);
@@ -59,17 +57,16 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
     return output;
 };
 
-function keyConvert (converters, obj, ignore) {
-    if (!(obj instanceof Object)) return obj;
-    if (obj instanceof Date) return obj;
-    if (Array.isArray(obj)) return obj.map(item => keyConvert(converters, item, ignore));
-    if (typeof ignore === 'function' && ignore(obj)) return obj;
+function keyConvert (converters, obj) {
+    if (typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(item => keyConvert(converters, item));
+    if (obj.constructor !== Object) return obj;
 
     const result = {};
 
     for (const key of Object.keys(obj)) {
         const converted = convert(converters, key);
-        result[converted] = keyConvert(converters, obj[key], ignore);
+        result[converted] = keyConvert(converters, obj[key]);
     }
 
     return result;

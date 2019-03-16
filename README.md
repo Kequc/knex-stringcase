@@ -77,12 +77,6 @@ This parameter may be an array describing more than one alteration in sequence. 
 
 A function or a string which describes how keys should re-enter your application from the database. This attribute may also be be an array and operates very similarly to `dbStringcase` above.
 
-#### ignoreStringcase (obj: object) => boolean
-
-A function which can be used to skip conversion on objects if needed. If true the object is not converted and will be returned as is. This is useful in case you are using moment for your dates for example.
-
-`obj => moment.isMoment(obj)`
-
 ## Contribute
 
 Sure!
