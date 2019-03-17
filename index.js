@@ -73,11 +73,5 @@ function keyConvert (converters, obj) {
 }
 
 function convert (converters, value) {
-    let result = value;
-
-    for (const converter of converters) {
-        result = converter(result);
-    }
-
-    return result;
+    return converters.reduce((acc, cur) => cur(acc), value);
 }
