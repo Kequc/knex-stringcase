@@ -21,9 +21,9 @@ describe('initialise', () => {
     it('without parameters', () => {
         const result = knexStringcase();
 
-        assert.equal(typeof result, 'object');
-        assert.equal(typeof result.postProcessResponse, 'function');
-        assert.equal(typeof result.wrapIdentifier, 'function');
+        assert.strict.equal(typeof result, 'object');
+        assert.strict.equal(typeof result.postProcessResponse, 'function');
+        assert.strict.equal(typeof result.wrapIdentifier, 'function');
     });
 
     it('with parameters', () => {
@@ -32,18 +32,20 @@ describe('initialise', () => {
             beforeWrapIdentifier() {},
             dbStringcase: 'snakecase',
             appStringcase: 'camelcase',
-            otherOption: 'hello'
+            otherOption: 'hello',
+            ignoreStringcase () {}
         };
         const result = knexStringcase(config);
 
-        assert.equal(typeof result, 'object');
-        assert.equal(typeof result.postProcessResponse, 'function');
-        assert.equal(typeof result.wrapIdentifier, 'function');
-        assert.equal(result.beforePostProcessResponse, undefined);
-        assert.equal(result.beforeWrapIdentifier, undefined);
-        assert.equal(result.dbStringcase, undefined);
-        assert.equal(result.appStringcase, undefined);
-        assert.equal(result.otherOption, 'hello');
+        assert.strict.equal(typeof result, 'object');
+        assert.strict.equal(typeof result.postProcessResponse, 'function');
+        assert.strict.equal(typeof result.wrapIdentifier, 'function');
+        assert.strict.equal(result.beforePostProcessResponse, undefined);
+        assert.strict.equal(result.beforeWrapIdentifier, undefined);
+        assert.strict.equal(result.dbStringcase, undefined);
+        assert.strict.equal(result.appStringcase, undefined);
+        assert.strict.equal(result.otherOption, 'hello');
+        assert.strict.equal(result.ignoreStringcase, undefined);
     });
 
     it('return new object', () => {
@@ -93,6 +95,30 @@ describe('postProcessResponse', () => {
         assert.deepEqual(postProcessResponse(['hi', now, 11]), ['hi', now, 11]);
     });
 
+    it('ignore specified objects', () => {
+        const { postProcessResponse } = knexStringcase({
+            ignoreStringcase (obj) {
+                return obj.skip_this === true;
+            }
+        });
+
+        assert.deepEqual(postProcessResponse([{
+            test_two: {
+                not_skipped: 'hi'
+            },
+            test_three: {
+                skip_this: true
+            }
+        }]), [{
+            testTwo: {
+                notSkipped: 'hi'
+            },
+            testThree: {
+                skip_this: true
+            }
+        }]);
+    });
+
     it('customise conversion', () => {
         const { postProcessResponse } = knexStringcase({
             appStringcase: ['camelcase', 'lowercase', value => value.slice(0, -1)]
@@ -133,9 +159,9 @@ describe('wrapIdentifier', () => {
     it('convert values', () => {
         const { wrapIdentifier } = knexStringcase();
 
-        assert.equal(wrapIdentifier('test', val => val), 'test');
-        assert.equal(wrapIdentifier('testTwo', val => val), 'test_two');
-        assert.equal(wrapIdentifier('testThree', val => val), 'test_three');
+        assert.strict.equal(wrapIdentifier('test', val => val), 'test');
+        assert.strict.equal(wrapIdentifier('testTwo', val => val), 'test_two');
+        assert.strict.equal(wrapIdentifier('testThree', val => val), 'test_three');
     });
 
     it('customise conversion', () => {
@@ -143,9 +169,9 @@ describe('wrapIdentifier', () => {
             dbStringcase: ['snakecase', 'uppercase', value => value.slice(0, -1)]
         });
 
-        assert.equal(wrapIdentifier('test', val => val), 'TES');
-        assert.equal(wrapIdentifier('testTwo', val => val), 'TEST_TW');
-        assert.equal(wrapIdentifier('testThree', val => val), 'TEST_THRE');
+        assert.strict.equal(wrapIdentifier('test', val => val), 'TES');
+        assert.strict.equal(wrapIdentifier('testTwo', val => val), 'TEST_TW');
+        assert.strict.equal(wrapIdentifier('testThree', val => val), 'TEST_THRE');
     });
 
     it('run before after functions', () => {
@@ -158,8 +184,8 @@ describe('wrapIdentifier', () => {
             }
         });
 
-        assert.equal(wrapIdentifier('test', val => '1' + val), '1test_hmmmHm again');
-        assert.equal(wrapIdentifier('testTwo', val => '1' + val), '1test_two_hmmmHm again');
-        assert.equal(wrapIdentifier('testThree', val => '1' + val), '1test_three_hmmmHm again');
+        assert.strict.equal(wrapIdentifier('test', val => '1' + val), '1test_hmmmHm again');
+        assert.strict.equal(wrapIdentifier('testTwo', val => '1' + val), '1test_two_hmmmHm again');
+        assert.strict.equal(wrapIdentifier('testThree', val => '1' + val), '1test_three_hmmmHm again');
     });
 });
