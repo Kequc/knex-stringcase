@@ -62,14 +62,12 @@ function keyConvert (converters, obj) {
     if (Array.isArray(obj)) return obj.map(item => keyConvert(converters, item));
     if (obj.constructor !== Object) return obj;
 
-    const result = {};
-
-    for (const key of Object.keys(obj)) {
+    return Object.keys(obj).reduce((result, key) => {
         const converted = convert(converters, key);
         result[converted] = keyConvert(converters, obj[key]);
-    }
 
-    return result;
+        return result;
+    }, {});
 }
 
 function convert (converters, value) {
