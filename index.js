@@ -65,14 +65,11 @@ function keyConvert (converters, obj, ignore) {
     if (Array.isArray(obj)) return obj.map(item => keyConvert(converters, item, ignore));
     if (typeof ignore === 'function' && ignore(obj)) return obj;
 
-    const result = {};
-
-    for (const key of Object.keys(obj)) {
+    return Object.keys(obj).reduce((result, key) => {
         const converted = convert(converters, key);
         result[converted] = keyConvert(converters, obj[key], ignore);
-    }
-
-    return result;
+        return result;
+    }, {});
 }
 
 function convert (converters, value) {
