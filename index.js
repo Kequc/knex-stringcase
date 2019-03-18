@@ -58,9 +58,8 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
 };
 
 function keyConvert (converters, obj) {
-    if (typeof obj !== 'object') return obj;
+    if (typeof obj !== 'object' || obj instanceof Date || obj === null) return obj;
     if (Array.isArray(obj)) return obj.map(item => keyConvert(converters, item));
-    if (obj.constructor !== Object) return obj;
 
     return Object.keys(obj).reduce((result, key) => {
         const converted = convert(converters, key);

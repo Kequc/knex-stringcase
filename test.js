@@ -69,6 +69,25 @@ describe('postProcessResponse', () => {
         });
     });
 
+    it('convert keys when response is a class (mysql2 has TextRow as a response)', () => {
+        const { postProcessResponse } = knexStringcase();
+        const now = new Date();
+
+        class TextRow {
+            constructor() {
+                this.test = 'hi';
+                this.test_two = now;
+                this.test_three = 11;
+            }
+        }
+
+        assert.deepEqual(postProcessResponse(new TextRow()), {
+            test: 'hi',
+            testTwo: now,
+            testThree: 11
+        });
+    });
+
     it('deep convert keys', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
@@ -90,7 +109,7 @@ describe('postProcessResponse', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse(['hi', now, 11]), ['hi', now, 11]);
+        assert.deepEqual(postProcessResponse(['hi', now, 11, null, undefined]), ['hi', now, 11, null, undefined]);
     });
 
     it('customise conversion', () => {
