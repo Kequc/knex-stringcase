@@ -119,6 +119,25 @@ describe('postProcessResponse', () => {
         }]);
     });
 
+    it('convert keys when response is an instance of a class', () => {
+        const { postProcessResponse } = knexStringcase();
+        const now = new Date();
+
+        class TextRow {
+            constructor() {
+                this.test = 'hi';
+                this.test_two = now;
+                this.test_three = 11;
+            }
+        }
+
+        assert.deepEqual(postProcessResponse(new TextRow()), {
+            test: 'hi',
+            testTwo: now,
+            testThree: 11
+        });
+    });
+
     it('customise conversion', () => {
         const { postProcessResponse } = knexStringcase({
             appStringcase: ['camelcase', 'lowercase', value => value.slice(0, -1)]
