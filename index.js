@@ -32,7 +32,8 @@ const postProcessResponse = (converters, before, after, ignore) => (result, quer
         output = before(output, queryContext);
     }
 
-    output = keyConvert(converters, output, ignore);
+    const memoizedConvert = memoize(convert(converters))
+    output = keyConvert(memoizedConvert, output, ignore);
 
     if (typeof after === 'function') {
         output = after(output, queryContext);
@@ -48,7 +49,7 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
         output = before(output, queryContext);
     }
 
-    output = convert(converters, output);
+    output = convert(converters)(output);
 
     if (typeof after === 'function') {
         output = after(output, origImpl, queryContext);
@@ -59,22 +60,38 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
     return output;
 };
 
-function keyConvert (converters, obj, ignore) {
+function keyConvert (convertFn, obj, ignore) {
     if (!(obj instanceof Object)) return obj;
     if (obj instanceof Date) return obj;
-    if (Array.isArray(obj)) return obj.map(item => keyConvert(converters, item, ignore));
+
+    if (Array.isArray(obj)) return obj.map(item => keyConvert(convertFn, item, ignore));
     if (typeof ignore === 'function' && ignore(obj)) return obj;
 
     const result = {};
 
     for (const key of Object.keys(obj)) {
-        const converted = convert(converters, key);
-        result[converted] = keyConvert(converters, obj[key], ignore);
+        const converted = convertFn(key);
+        result[converted] = keyConvert(convertFn, obj[key], ignore);
     }
 
     return result;
 }
 
-function convert (converters, value) {
-    return converters.reduce((acc, cur) => cur(acc), value);
+function convert (converters) {
+    return function(value) {
+        return converters.reduce((acc, cur) => cur(acc), value);
+    }
+}
+
+function memoize(fn) {
+    const cache = new Map()
+    return function(...args) {
+        if (cache.has(args[0])) {
+            return cache.get(args[0])
+        }
+
+        const result = fn(...args)
+        cache.set(args[0], result)
+        return result
+    }
 }
