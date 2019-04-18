@@ -9,15 +9,19 @@ module.exports = (config = {}) => {
     delete options.appStringcase;
     delete options.ignoreStringcase;
 
+    const makeMemoizedConvert = converters => memoize(
+        value => converters.reduce((acc, cur) => cur(acc), value)
+    );
+
     options.postProcessResponse = postProcessResponse(
-        getConverters(config.appStringcase || 'camelcase'),
+        makeMemoizedConvert(getConverters(config.appStringcase || 'camelcase')),
         config.beforePostProcessResponse,
         config.postProcessResponse,
         config.ignoreStringcase
     );
 
     options.wrapIdentifier = wrapIdentifier(
-        getConverters(config.dbStringcase || 'snakecase'),
+        makeMemoizedConvert(getConverters(config.dbStringcase || 'snakecase')),
         config.beforeWrapIdentifier,
         config.wrapIdentifier
     );
@@ -25,15 +29,14 @@ module.exports = (config = {}) => {
     return options;
 };
 
-const postProcessResponse = (converters, before, after, ignore) => (result, queryContext) => {
+const postProcessResponse = (convert, before, after, ignore) => (result, queryContext) => {
     let output = result;
 
     if (typeof before === 'function') {
         output = before(output, queryContext);
     }
 
-    const memoizedConvert = memoize(convert(converters))
-    output = keyConvert(memoizedConvert, output, ignore);
+    output = keyConvert(convert, output, ignore);
 
     if (typeof after === 'function') {
         output = after(output, queryContext);
@@ -42,14 +45,14 @@ const postProcessResponse = (converters, before, after, ignore) => (result, quer
     return output;
 };
 
-const wrapIdentifier = (converters, before, after) => (value, origImpl, queryContext) => {
+const wrapIdentifier = (convert, before, after) => (value, origImpl, queryContext) => {
     let output = value;
 
     if (typeof before === 'function') {
         output = before(output, queryContext);
     }
 
-    output = convert(converters)(output);
+    output = convert(output);
 
     if (typeof after === 'function') {
         output = after(output, origImpl, queryContext);
@@ -60,38 +63,32 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
     return output;
 };
 
-function keyConvert (convertFn, obj, ignore) {
+function keyConvert (convert, obj, ignore) {
     if (!(obj instanceof Object)) return obj;
     if (obj instanceof Date) return obj;
 
-    if (Array.isArray(obj)) return obj.map(item => keyConvert(convertFn, item, ignore));
+    if (Array.isArray(obj)) return obj.map(item => keyConvert(convert, item, ignore));
     if (typeof ignore === 'function' && ignore(obj)) return obj;
 
     const result = {};
 
     for (const key of Object.keys(obj)) {
-        const converted = convertFn(key);
-        result[converted] = keyConvert(convertFn, obj[key], ignore);
+        const converted = convert(key);
+        result[converted] = keyConvert(convert, obj[key], ignore);
     }
 
     return result;
 }
 
-function convert (converters) {
-    return function(value) {
-        return converters.reduce((acc, cur) => cur(acc), value);
-    }
-}
-
 function memoize(fn) {
-    const cache = new Map()
+    const cache = new Map();
     return function(...args) {
         if (cache.has(args[0])) {
-            return cache.get(args[0])
+            return cache.get(args[0]);
         }
 
-        const result = fn(...args)
-        cache.set(args[0], result)
-        return result
+        const result = fn(...args);
+        cache.set(args[0], result);
+        return result;
     }
 }
