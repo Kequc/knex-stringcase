@@ -172,6 +172,29 @@ describe('postProcessResponse', () => {
             what_this: 'ah again'
         });
     });
+
+    it('conerts the same key multiple times', () => {
+        const { postProcessResponse } = knexStringcase();
+        const now = new Date();
+
+        assert.deepEqual(postProcessResponse([{
+            test: 'hi',
+            test_two: now,
+            test_three: 11
+        }, {
+            test: 'hi',
+            test_two: now,
+            test_three: 11
+        }]), [{
+            test: 'hi',
+            testTwo: now,
+            testThree: 11
+        }, {
+            test: 'hi',
+            testTwo: now,
+            testThree: 11
+        }]);
+    });
 });
 
 describe('wrapIdentifier', () => {
@@ -206,5 +229,16 @@ describe('wrapIdentifier', () => {
         assert.strict.equal(wrapIdentifier('test', val => '1' + val), '1test_hmmmHm again');
         assert.strict.equal(wrapIdentifier('testTwo', val => '1' + val), '1test_two_hmmmHm again');
         assert.strict.equal(wrapIdentifier('testThree', val => '1' + val), '1test_three_hmmmHm again');
+    });
+
+    it('converts the same value multiple times', () => {
+        const { wrapIdentifier } = knexStringcase();
+
+        assert.strict.equal(wrapIdentifier('test', val => val), 'test');
+        assert.strict.equal(wrapIdentifier('testTwo', val => val), 'test_two');
+        assert.strict.equal(wrapIdentifier('testThree', val => val), 'test_three');
+        assert.strict.equal(wrapIdentifier('test', val => val), 'test');
+        assert.strict.equal(wrapIdentifier('testTwo', val => val), 'test_two');
+        assert.strict.equal(wrapIdentifier('testThree', val => val), 'test_three');
     });
 });
