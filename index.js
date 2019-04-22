@@ -1,6 +1,8 @@
-const getConverters = require('./get-converters.js');
+module.exports = knexStringcase;
 
-module.exports = (config = {}) => {
+const buildConverter = require('./build-converter.js');
+
+function knexStringcase (config = {}) {
     const options = Object.assign({}, config); // clone
 
     delete options.beforePostProcessResponse;
@@ -10,29 +12,29 @@ module.exports = (config = {}) => {
     delete options.ignoreStringcase;
 
     options.postProcessResponse = postProcessResponse(
-        getConverters(config.appStringcase || 'camelcase'),
+        buildConverter(config.appStringcase || 'camelcase'),
         config.beforePostProcessResponse,
         config.postProcessResponse,
         config.ignoreStringcase
     );
 
     options.wrapIdentifier = wrapIdentifier(
-        getConverters(config.dbStringcase || 'snakecase'),
+        buildConverter(config.dbStringcase || 'snakecase'),
         config.beforeWrapIdentifier,
         config.wrapIdentifier
     );
 
     return options;
-};
+}
 
-const postProcessResponse = (converters, before, after, ignore) => (result, queryContext) => {
+const postProcessResponse = (convert, before, after, ignore) => (result, queryContext) => {
     let output = result;
 
     if (typeof before === 'function') {
         output = before(output, queryContext);
     }
 
-    output = keyConvert(converters, output, ignore);
+    output = keyConvert(convert, output, ignore);
 
     if (typeof after === 'function') {
         output = after(output, queryContext);
@@ -41,14 +43,14 @@ const postProcessResponse = (converters, before, after, ignore) => (result, quer
     return output;
 };
 
-const wrapIdentifier = (converters, before, after) => (value, origImpl, queryContext) => {
+const wrapIdentifier = (convert, before, after) => (value, origImpl, queryContext) => {
     let output = value;
 
     if (typeof before === 'function') {
         output = before(output, queryContext);
     }
 
-    output = convert(converters, output);
+    output = convert(output);
 
     if (typeof after === 'function') {
         output = after(output, origImpl, queryContext);
@@ -59,22 +61,18 @@ const wrapIdentifier = (converters, before, after) => (value, origImpl, queryCon
     return output;
 };
 
-function keyConvert (converters, obj, ignore) {
+function keyConvert (convert, obj, ignore) {
     if (!(obj instanceof Object)) return obj;
     if (obj instanceof Date) return obj;
-    if (Array.isArray(obj)) return obj.map(item => keyConvert(converters, item, ignore));
+    if (Array.isArray(obj)) return obj.map(item => keyConvert(convert, item, ignore));
     if (typeof ignore === 'function' && ignore(obj)) return obj;
 
     const result = {};
 
     for (const key of Object.keys(obj)) {
-        const converted = convert(converters, key);
-        result[converted] = keyConvert(converters, obj[key], ignore);
+        const converted = convert(key);
+        result[converted] = keyConvert(convert, obj[key], ignore);
     }
 
     return result;
-}
-
-function convert (converters, value) {
-    return converters.reduce((acc, cur) => cur(acc), value);
 }
