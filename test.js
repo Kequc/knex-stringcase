@@ -173,7 +173,7 @@ describe('postProcessResponse', () => {
         });
     });
 
-    it('conerts the same key multiple times', () => {
+    it('converts the same key multiple times', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
