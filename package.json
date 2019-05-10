@@ -1,15 +1,11 @@
 {
     "name": "knex-stringcase",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "Helper switches key case for npm knex",
     "main": "index.js",
     "scripts": {
         "test": "node test.js"
     },
-    "files": [
-        "build-converter.js",
-        "index.js"
-    ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Kequc/knex-stringcase.git"
