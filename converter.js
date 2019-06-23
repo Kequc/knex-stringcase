@@ -1,12 +1,12 @@
-module.exports = buildConverter;
+module.exports = converter;
 
 const stringcase = require('stringcase');
 
-function buildConverter (arr) {
+function converter (arr) {
     const methods = (Array.isArray(arr) ? arr : [arr]).map(getMethod);
     const cache = new Map();
 
-    return function converter (value) {
+    return function convert (value) {
         if (!cache.has(value)) {
             cache.set(value, methods.reduce((acc, cur) => cur(acc), value));
         }

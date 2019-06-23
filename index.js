@@ -1,6 +1,6 @@
 module.exports = knexStringcase;
 
-const buildConverter = require('./build-converter.js');
+const converter = require('./converter.js');
 
 function knexStringcase (config = {}) {
     const options = Object.assign({}, config); // clone
@@ -12,14 +12,14 @@ function knexStringcase (config = {}) {
     delete options.ignoreStringcase;
 
     options.postProcessResponse = postProcessResponse(
-        buildConverter(config.appStringcase || 'camelcase'),
+        converter(config.appStringcase || 'camelcase'),
         config.beforePostProcessResponse,
         config.postProcessResponse,
         config.ignoreStringcase
     );
 
     options.wrapIdentifier = wrapIdentifier(
-        buildConverter(config.dbStringcase || 'snakecase'),
+        converter(config.dbStringcase || 'snakecase'),
         config.beforeWrapIdentifier,
         config.wrapIdentifier
     );
@@ -34,7 +34,7 @@ const postProcessResponse = (convert, before, after, ignore) => (result, queryCo
         output = before(output, queryContext);
     }
 
-    output = keyConvert(convert, output, ignore);
+    output = keyConvert(convert, ignore, output);
 
     if (typeof after === 'function') {
         output = after(output, queryContext);
@@ -61,17 +61,17 @@ const wrapIdentifier = (convert, before, after) => (value, origImpl, queryContex
     return output;
 };
 
-function keyConvert (convert, obj, ignore) {
+function keyConvert (convert, ignore, obj) {
     if (!(obj instanceof Object)) return obj;
     if (obj instanceof Date) return obj;
-    if (Array.isArray(obj)) return obj.map(item => keyConvert(convert, item, ignore));
+    if (Array.isArray(obj)) return obj.map(item => keyConvert(convert, ignore, item));
     if (typeof ignore === 'function' && ignore(obj)) return obj;
 
     const result = {};
 
     for (const key of Object.keys(obj)) {
         const converted = convert(key);
-        result[converted] = keyConvert(convert, obj[key], ignore);
+        result[converted] = keyConvert(convert, ignore, obj[key]);
     }
 
     return result;
