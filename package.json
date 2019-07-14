@@ -1,8 +1,9 @@
 {
     "name": "knex-stringcase",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "description": "Helper switches key case for npm knex",
     "main": "index.js",
+    "types": "index.d.ts",
     "scripts": {
         "test": "node test.js"
     },
@@ -28,5 +29,8 @@
     "homepage": "https://github.com/Kequc/knex-stringcase#readme",
     "dependencies": {
         "stringcase": "^4.3.0"
+    },
+    "devDependencies": {
+        "@types/knex": "^0.16.1"
     }
 }
