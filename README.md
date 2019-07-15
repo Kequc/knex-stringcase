@@ -57,6 +57,27 @@ const db = knex(options);
 
 The two knex config options this library overrides are `postProcessResponse` and `wrapIdentifier`. If you provide those options they will be run after string conversion has already taken place. If you wish to run before conversion has taken place use `beforePostProcessResponse` and `beforeWrapIdentifier` instead.
 
+### TypeScript usage
+
+```typescript
+import * as knex from 'knex';
+import * as knexStringcase from 'knex';
+
+const configFromKnexReadme = {
+  client: 'mysql',
+  connection: {
+    host : '127.0.0.1',
+    user : 'your_database_user',
+    password : 'your_database_password',
+    database : 'myapp_test'
+  }
+};
+
+const options = knexStringcase<knex.Config>(configFromKnexReadme);
+const db = knex(options);
+```
+
+
 ## New options
 
 #### beforePostProcessResponse (result: array|object, queryContext: object) => array|object

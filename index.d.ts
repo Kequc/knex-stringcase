@@ -1,22 +1,17 @@
 declare module 'knex-stringcase' {
-    import * as Knex from 'knex';
+    import { Conventions } from 'stringcase';
 
-    type StringCase = 
-        'camelcase' | 'capitalcase' | 'constcase' |
-        'cramcase' | 'decapitalcase' | 'dotcase' |
-        'enumcase' | 'lowercase' | 'pascalcase' |
-        'pathcase' | 'sentencecase' | 'snakecase' |
-        'spacecase' | 'spinalcase' | 'titlecase' |
-        'trimcase' | 'uppercase';
+    type Stringcase = Conventions | Conventions[] | ((str: string) => string);
 
-    interface IKnexStringCaseConfig extends Knex.Config {
-        appStringcase?: StringCase | StringCase[];
-        dbStringcase?: StringCase | StringCase[];
+    interface IKnexStringCaseConfig {
+        appStringcase?: Stringcase;
+        dbStringcase?: Stringcase;
         beforePostProcessResponse?(result: any[] | object, queryContext: object): any[] | object;
         beforeWrapIdentifier?(value: string, queryContext: object): string;
         ignoreStringcase?(obj: object): boolean;
     }
-  
-    function knexStringcase(config: IKnexStringCaseConfig): Knex.Config;
+
+    function knexStringcase<T>(config: T & IKnexStringCaseConfig): T;
+    
     export = knexStringcase;
 }

@@ -29,8 +29,5 @@
     "homepage": "https://github.com/Kequc/knex-stringcase#readme",
     "dependencies": {
         "stringcase": "^4.3.0"
-    },
-    "devDependencies": {
-        "@types/knex": "^0.16.1"
     }
 }
