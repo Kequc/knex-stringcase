@@ -1,7 +1,8 @@
 declare module 'knex-stringcase' {
     import { Conventions } from 'stringcase';
 
-    type Stringcase = Conventions | Conventions[] | ((str: string) => string);
+    type StringcaseFn = (str: string) => string;
+    type Stringcase = Conventions | StringcaseFn | (Conventions | StringcaseFn)[]
 
     interface IKnexStringCaseConfig {
         appStringcase?: Stringcase;
