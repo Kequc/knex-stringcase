@@ -34,7 +34,7 @@ const postProcessResponse = (convert, before, after, ignore) => (result, queryCo
         output = before(output, queryContext);
     }
 
-    output = keyConvert(convert, ignore, output);
+    output = keyConvert(convert, ignore, output, [], queryContext);
 
     if (typeof after === 'function') {
         output = after(output, queryContext);
@@ -61,17 +61,17 @@ const wrapIdentifier = (convert, before, after) => (value, origImpl, queryContex
     return output;
 };
 
-function keyConvert (convert, ignore, obj) {
+function keyConvert (convert, ignore, obj, path, queryContext) {
     if (!(obj instanceof Object)) return obj;
     if (obj instanceof Date) return obj;
-    if (Array.isArray(obj)) return obj.map(item => keyConvert(convert, ignore, item));
-    if (typeof ignore === 'function' && ignore(obj)) return obj;
+    if (Array.isArray(obj)) return obj.map(item => keyConvert(convert, ignore, item, path, queryContext));
+    if (typeof ignore === 'function' && ignore(obj, path.join('.'), queryContext)) return obj;
 
     const result = {};
 
     for (const key of Object.keys(obj)) {
         const converted = convert(key);
-        result[converted] = keyConvert(convert, ignore, obj[key]);
+        result[converted] = keyConvert(convert, ignore, obj[key], path.concat(key), queryContext);
     }
 
     return result;

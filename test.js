@@ -119,6 +119,75 @@ describe('postProcessResponse', () => {
         }]);
     });
 
+    it('ignore using specified name', () => {
+        const { postProcessResponse } = knexStringcase({
+            ignoreStringcase (obj, name) {
+                return name === 'test_three';
+            }
+        });
+
+        assert.deepEqual(postProcessResponse([{
+            test: {
+                test_two: 'hi'
+            },
+            test_three: {
+                test_four: 'there'
+            }
+        }]), [{
+            test: {
+                testTwo: 'hi'
+            },
+            testThree: {
+                test_four: 'there'
+            }
+        }]);
+    });
+
+    it('ignore using specified deep name', () => {
+        const { postProcessResponse } = knexStringcase({
+            ignoreStringcase (obj, name) {
+                return name === 'test.test_four';
+            }
+        });
+
+        assert.deepEqual(postProcessResponse([{
+            test: {
+                test_two: { test_three: 'hi' },
+                test_four: { test_five: 'there' }
+            }
+        }]), [{
+            test: {
+                testTwo: { testThree: 'hi' },
+                testFour: { test_five: 'there' }
+            }
+        }]);
+    });
+
+    it('ignore using queryContext', () => {
+        const { postProcessResponse } = knexStringcase({
+            ignoreStringcase (obj, name, queryContext) {
+                return queryContext.test === name;
+            }
+        });
+        const queryContext = { test: 'test_three' };
+
+        assert.deepEqual(postProcessResponse([{
+            test: {
+                test_two: 'hi'
+            },
+            test_three: {
+                test_four: 'there'
+            }
+        }], queryContext), [{
+            test: {
+                testTwo: 'hi'
+            },
+            testThree: {
+                test_four: 'there'
+            }
+        }]);
+    });
+
     it('convert keys when response is an instance of a class', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
