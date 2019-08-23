@@ -89,4 +89,4 @@ The second parameter will give you the name of the column. Or if nested it will 
 
 ## Contribute
 
-Sure! (Except for testing frameworks, typescript, anything with a dependency.)
+Sure! Except for testing frameworks, typescript, anything with a dependency.
