@@ -83,8 +83,10 @@ A function which can be used to skip conversion on objects if needed. If true th
 
 `obj => moment.isMoment(obj)`
 
-The second parameter will give you the name of the column. Or if nested it will give you the name of the column in dot notation (`"name.name"`).
+The second parameter will give you the name of the column. Or if nested it will give you the name of the column in dot notation (`"name.name"`). If you wish to ignore recursive results, it's simplest to ignore all keys.
+
+`(obj, name) => name !== ''`
 
 ## Contribute
 
-Sure!
+Sure! (Except for testing frameworks, typescript, anything with a dependency.)

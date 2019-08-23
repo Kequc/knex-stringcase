@@ -1,6 +1,6 @@
 module.exports = knexStringcase;
 
-const converter = require('./converter.js');
+const buildConverter = require('./build-converter.js');
 
 function knexStringcase (config = {}) {
     const options = Object.assign({}, config); // clone
@@ -11,15 +11,17 @@ function knexStringcase (config = {}) {
     delete options.appStringcase;
     delete options.ignoreStringcase;
 
-    options.postProcessResponse = postProcessResponse(
-        converter(config.appStringcase || 'camelcase'),
+    options.postProcessResponse = buildPostProcessResponse(
+        buildKeyConverter(
+            buildConverter(config.appStringcase || 'camelcase'),
+            config.ignoreStringcase
+        ),
         config.beforePostProcessResponse,
-        config.postProcessResponse,
-        config.ignoreStringcase
+        config.postProcessResponse
     );
 
-    options.wrapIdentifier = wrapIdentifier(
-        converter(config.dbStringcase || 'snakecase'),
+    options.wrapIdentifier = buildWrapIdentifier(
+        buildConverter(config.dbStringcase || 'snakecase'),
         config.beforeWrapIdentifier,
         config.wrapIdentifier
     );
@@ -27,52 +29,61 @@ function knexStringcase (config = {}) {
     return options;
 }
 
-const postProcessResponse = (convert, before, after, ignore) => (result, queryContext) => {
-    let output = result;
+// Process result returned from the database
+function buildPostProcessResponse (keyConverter, before, after) {
+    return function postProcessResponse (result, queryContext) {
+        let output = result;
 
-    if (typeof before === 'function') {
-        output = before(output, queryContext);
-    }
+        if (typeof before === 'function') {
+            output = before(output, queryContext);
+        }
 
-    output = keyConvert(convert, ignore, output, [], queryContext);
+        output = keyConverter(output, [], queryContext);
 
-    if (typeof after === 'function') {
-        output = after(output, queryContext);
-    }
+        if (typeof after === 'function') {
+            output = after(output, queryContext);
+        }
 
-    return output;
-};
+        return output;
+    };
+}
 
-const wrapIdentifier = (convert, before, after) => (value, origImpl, queryContext) => {
-    let output = value;
+// Recursively convert all object keys
+function buildKeyConverter (converter, ignoreStringcase) {
+    return function keyConverter (obj, path, queryContext) {
+        if (!(obj instanceof Object)) return obj;
+        if (obj instanceof Date) return obj;
+        if (Array.isArray(obj)) return obj.map(item => keyConverter(item, path, queryContext));
+        if (typeof ignoreStringcase === 'function' && ignoreStringcase(obj, path.join('.'), queryContext)) return obj;
+    
+        const output = {};
+    
+        for (const key of Object.keys(obj)) {
+            const converted = converter(key);
+            output[converted] = keyConverter(obj[key], path.concat(key), queryContext);
+        }
+    
+        return output;
+    };
+}
 
-    if (typeof before === 'function') {
-        output = before(output, queryContext);
-    }
+// Convert string value on the way to the database
+function buildWrapIdentifier (converter, before, after) {
+    return function wrapIdentifier (value, origImpl, queryContext) {
+        let output = value;
 
-    output = convert(output);
+        if (typeof before === 'function') {
+            output = before(output, queryContext);
+        }
 
-    if (typeof after === 'function') {
-        output = after(output, origImpl, queryContext);
-    } else {
-        output = origImpl(output);
-    }
+        output = converter(output);
 
-    return output;
-};
+        if (typeof after === 'function') {
+            output = after(output, origImpl, queryContext);
+        } else {
+            output = origImpl(output);
+        }
 
-function keyConvert (convert, ignore, obj, path, queryContext) {
-    if (!(obj instanceof Object)) return obj;
-    if (obj instanceof Date) return obj;
-    if (Array.isArray(obj)) return obj.map(item => keyConvert(convert, ignore, item, path, queryContext));
-    if (typeof ignore === 'function' && ignore(obj, path.join('.'), queryContext)) return obj;
-
-    const result = {};
-
-    for (const key of Object.keys(obj)) {
-        const converted = convert(key);
-        result[converted] = keyConvert(convert, ignore, obj[key], path.concat(key), queryContext);
-    }
-
-    return result;
+        return output;
+    };
 }
