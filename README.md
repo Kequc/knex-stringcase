@@ -65,7 +65,7 @@ The two knex config options this library overrides are `wrapIdentifier` and `pos
 (value: string, queryContext: object) => string
 ```
 
-A function which will run before modifications made by this library, when keys are still in application format on the way to the database if needed.
+A function which will run before modifications made by this library, when keys are still in application format on the way to the database.
 
 #### appPostProcessResponse
 
@@ -73,7 +73,7 @@ A function which will run before modifications made by this library, when keys a
 (result: array|object, queryContext: object) => array|object
 ```
 
-A function which will run after modifications made by this library, when keys are in application format if needed.
+A function which will run after modifications made by this library, when keys are in application format.
 
 #### appStringcase
 
@@ -99,11 +99,11 @@ A function or a string which describes how keys should be modified when headed t
 (obj: array|object, name: string, queryContext: object) => boolean
 ```
 
-A function which can be used to skip conversion on objects if needed. If true the object is not converted and will be returned as is. This is useful in case you are using moment for your dates for example.
+A function which can be used to skip conversion on objects. If true is returned the object is not converted and will be left as is. This is useful in case you are using moment for your dates for example.
 
 `ignoreStringcase: (obj) => moment.isMoment(obj)`
 
-The second parameter will give you the name of the field. The name of the field is nested in dot notation `"root.name.name"`. If you wish to only convert only shallow results simply ignore everything beyond root.
+The second parameter will give you the name of the field. The name is nested in dot notation `"root.name.name"`. If you wish to only convert only shallow results simply ignore everything beyond root.
 
 `ignoreStringcase: (obj, name) => name !== 'root'`
 
