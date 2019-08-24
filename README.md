@@ -103,7 +103,7 @@ A function which can be used to skip conversion on objects if needed. If true th
 
 `(obj) => moment.isMoment(obj)`
 
-The second parameter will give you the name of the column. Or if nested it will give you the name of the column in dot notation `"root.name.name"`. If you wish to only return shallow results simply ignore everything beyond root.
+The second parameter will give you the name of the column. The name of the column is nested in dot notation `"root.name.name"`. If you wish to only return shallow results simply ignore everything beyond root.
 
 `(obj, name) => name !== 'root'`
 
