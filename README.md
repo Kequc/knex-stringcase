@@ -55,37 +55,57 @@ const options = knexStringcase(configFromKnexReadme);
 const db = knex(options);
 ```
 
-The two knex config options this library overrides are `postProcessResponse` and `wrapIdentifier`. If you provide those options they will be run after string conversion has already taken place. If you wish to run before conversion has taken place use `beforePostProcessResponse` and `beforeWrapIdentifier` instead.
+The two knex config options this library overrides are `postProcessResponse` and `wrapIdentifier`. If you provide those options they will be run when keys are in database format. If you wish to run when keys are in application format use `appPostProcessResponse` and `appWrapIdentifier` instead.
 
 ## New options
 
-#### beforePostProcessResponse (result: array|object, queryContext: object) => array|object
+#### appWrapIdentifier
 
-A function which runs before modifications made by this library if needed.
+```javascript
+(value: string, queryContext: object) => string
+```
 
-#### beforeWrapIdentifier (value: string, queryContext: object) => string
+A function which will run before modifications made by this library, when keys are still in application format if needed.
 
-A function which runs before modifications made by this library if needed.
+#### appPostProcessResponse
 
-#### dbStringcase <default: 'snakecase'>
+```javascript
+(result: array|object, queryContext: object) => array|object
+```
 
-A function or a string which describes how keys should be modified when headed to the database. If a string is provided keys will be modified by their respective function found in [npm stringcase](https://www.npmjs.com/package/stringcase). Alternatively a function can be passed, taking the string in its current state which will give you more control to suit your needs.
+A function which will run after modifications made by this library, when keys are in application format if needed.
+
+#### appStringcase
+
+```
+<default: 'camelcase'>
+```
+
+A function or a string which describes how keys should re-enter your application from the database. If a string is provided keys will be modified by their respective function found in [npm stringcase](https://www.npmjs.com/package/stringcase). Alternatively a function can be passed, taking the string in its current state which will give you more control to suit your needs.
 
 This parameter may be an array describing more than one alteration in sequence. eg `['snakecase', 'uppercase']`.
 
-#### appStringcase <default: 'camelcase'>
+#### dbStringcase
 
-A function or a string which describes how keys should re-enter your application from the database. This attribute may also be be an array and operates very similarly to `dbStringcase` above.
+```
+<default: 'snakecase'>
+```
 
-#### ignoreStringcase (obj: object, name: string, queryContext: object) => boolean
+A function or a string which describes how keys should be modified when headed to the database. This attribute may also be be an array and operates very similarly to `appStringcase` above.
+
+#### ignoreStringcase
+
+```javascript
+(obj: object, name: string, queryContext: object) => boolean
+```
 
 A function which can be used to skip conversion on objects if needed. If true the object is not converted and will be returned as is. This is useful in case you are using moment for your dates for example.
 
-`obj => moment.isMoment(obj)`
+`(obj) => moment.isMoment(obj)`
 
-The second parameter will give you the name of the column. Or if nested it will give you the name of the column in dot notation `"name.name"`. If you wish to only return shallow results simply ignore everything with a key.
+The second parameter will give you the name of the column. Or if nested it will give you the name of the column in dot notation `"root.name.name"`. If you wish to only return shallow results simply ignore everything beyond root.
 
-`(obj, name) => !!name`
+`(obj, name) => name !== 'root'`
 
 ## Contribute
 

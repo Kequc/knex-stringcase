@@ -5,10 +5,10 @@ const buildConverter = require('./build-converter.js');
 function knexStringcase (config = {}) {
     const options = Object.assign({}, config); // clone
 
-    delete options.beforePostProcessResponse;
-    delete options.beforeWrapIdentifier;
-    delete options.dbStringcase;
+    delete options.appPostProcessResponse;
+    delete options.appWrapIdentifier;
     delete options.appStringcase;
+    delete options.dbStringcase;
     delete options.ignoreStringcase;
 
     options.postProcessResponse = buildPostProcessResponse(
@@ -16,13 +16,13 @@ function knexStringcase (config = {}) {
             buildConverter(config.appStringcase || 'camelcase'),
             config.ignoreStringcase
         ),
-        config.beforePostProcessResponse,
-        config.postProcessResponse
+        config.postProcessResponse,
+        config.appPostProcessResponse
     );
 
     options.wrapIdentifier = buildWrapIdentifier(
         buildConverter(config.dbStringcase || 'snakecase'),
-        config.beforeWrapIdentifier,
+        config.appWrapIdentifier,
         config.wrapIdentifier
     );
 
@@ -38,7 +38,7 @@ function buildPostProcessResponse (keyConverter, before, after) {
             output = before(output, queryContext);
         }
 
-        output = keyConverter(output, [], queryContext);
+        output = keyConverter(output, 'root', queryContext);
 
         if (typeof after === 'function') {
             output = after(output, queryContext);
@@ -53,16 +53,20 @@ function buildKeyConverter (converter, ignoreStringcase) {
     return function keyConverter (obj, path, queryContext) {
         if (!(obj instanceof Object)) return obj;
         if (obj instanceof Date) return obj;
+
+        if (typeof ignoreStringcase === 'function') {
+            if (ignoreStringcase(obj, path, queryContext)) return obj;
+        }
+
         if (Array.isArray(obj)) return obj.map(item => keyConverter(item, path, queryContext));
-        if (typeof ignoreStringcase === 'function' && ignoreStringcase(obj, path.join('.'), queryContext)) return obj;
-    
+
         const output = {};
-    
+
         for (const key of Object.keys(obj)) {
             const converted = converter(key);
-            output[converted] = keyConverter(obj[key], path.concat(key), queryContext);
+            output[converted] = keyConverter(obj[key], `${path}.${key}`, queryContext);
         }
-    
+
         return output;
     };
 }
