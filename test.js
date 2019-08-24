@@ -28,10 +28,10 @@ describe('initialise', () => {
 
     it('with parameters', () => {
         const config = {
-            beforePostProcessResponse() {},
-            beforeWrapIdentifier() {},
-            dbStringcase: 'snakecase',
+            appWrapIdentifier() {},
+            appPostProcessResponse() {},
             appStringcase: 'camelcase',
+            dbStringcase: 'snakecase',
             otherOption: 'hello',
             ignoreStringcase () {}
         };
@@ -40,10 +40,10 @@ describe('initialise', () => {
         assert.strict.equal(typeof result, 'object');
         assert.strict.equal(typeof result.postProcessResponse, 'function');
         assert.strict.equal(typeof result.wrapIdentifier, 'function');
-        assert.strict.equal(result.beforePostProcessResponse, undefined);
-        assert.strict.equal(result.beforeWrapIdentifier, undefined);
-        assert.strict.equal(result.dbStringcase, undefined);
+        assert.strict.equal(result.appWrapIdentifier, undefined);
+        assert.strict.equal(result.appPostProcessResponse, undefined);
         assert.strict.equal(result.appStringcase, undefined);
+        assert.strict.equal(result.dbStringcase, undefined);
         assert.strict.equal(result.otherOption, 'hello');
         assert.strict.equal(result.ignoreStringcase, undefined);
     });
@@ -122,7 +122,7 @@ describe('postProcessResponse', () => {
     it('ignore using specified name', () => {
         const { postProcessResponse } = knexStringcase({
             ignoreStringcase (obj, name) {
-                return name === 'test_three';
+                return name === 'root.test_three';
             }
         });
 
@@ -143,10 +143,34 @@ describe('postProcessResponse', () => {
         }]);
     });
 
+    it('can ignore array using specified name', () => {
+        const { postProcessResponse } = knexStringcase({
+            ignoreStringcase (obj, name) {
+                return name === 'root.test_three';
+            }
+        });
+
+        assert.deepEqual(postProcessResponse([{
+            test: {
+                test_two: 'hi'
+            },
+            test_three: [{
+                test_four: 'there'
+            }]
+        }]), [{
+            test: {
+                testTwo: 'hi'
+            },
+            testThree: [{
+                test_four: 'there'
+            }]
+        }]);
+    });
+
     it('ignore using specified deep name', () => {
         const { postProcessResponse } = knexStringcase({
             ignoreStringcase (obj, name) {
-                return name === 'test.test_four';
+                return name === 'root.test.test_four';
             }
         });
 
@@ -169,7 +193,7 @@ describe('postProcessResponse', () => {
                 return queryContext.test === name;
             }
         });
-        const queryContext = { test: 'test_three' };
+        const queryContext = { test: 'root.test_three' };
 
         assert.deepEqual(postProcessResponse([{
             test: {
@@ -181,6 +205,31 @@ describe('postProcessResponse', () => {
         }], queryContext), [{
             test: {
                 testTwo: 'hi'
+            },
+            testThree: {
+                test_four: 'there'
+            }
+        }]);
+    });
+
+    it('ignore deep results', () => {
+        const { postProcessResponse } = knexStringcase({
+            ignoreStringcase (obj, name) {
+                return name !== 'root';
+            }
+        });
+        const queryContext = { test: 'root.test_three' };
+
+        assert.deepEqual(postProcessResponse([{
+            test: {
+                test_two: 'hi'
+            },
+            test_three: {
+                test_four: 'there'
+            }
+        }], queryContext), [{
+            test: {
+                test_two: 'hi'
             },
             testThree: {
                 test_four: 'there'
@@ -220,10 +269,10 @@ describe('postProcessResponse', () => {
 
     it('run before after functions', () => {
         const { postProcessResponse } = knexStringcase({
-            beforePostProcessResponse (output) {
+            postProcessResponse (output) {
                 return Object.assign({ what_this: 'ahhhhhhh' }, output);
             },
-            postProcessResponse (output) {
+            appPostProcessResponse (output) {
                 return Object.assign({ what_this: 'ah again' }, output);
             },
         });
@@ -287,7 +336,7 @@ describe('wrapIdentifier', () => {
 
     it('run before after functions', () => {
         const { wrapIdentifier } = knexStringcase({
-            beforeWrapIdentifier (output) {
+            appWrapIdentifier (output) {
                 return output + 'Hmmm';
             },
             wrapIdentifier (output, origImpl) {
