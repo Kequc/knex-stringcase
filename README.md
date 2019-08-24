@@ -103,7 +103,7 @@ A function which can be used to skip conversion on objects. If true is returned 
 
 `ignoreStringcase: (obj) => moment.isMoment(obj)`
 
-The second parameter will give you the name of the field. The name is nested in dot notation `"root.name.name"`. If you wish to only convert only shallow results simply ignore everything beyond root.
+The second parameter will give you the name of the field. This is nested in dot notation `"root.name.name"`. If you wish to only convert only shallow results simply ignore everything beyond root.
 
 `ignoreStringcase: (obj, name) => name !== 'root'`
 
