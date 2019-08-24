@@ -55,7 +55,7 @@ const options = knexStringcase(configFromKnexReadme);
 const db = knex(options);
 ```
 
-The two knex config options this library overrides are `postProcessResponse` and `wrapIdentifier`. If you provide those options they will be run when keys are in database format. If you wish to run when keys are in application format use `appPostProcessResponse` and `appWrapIdentifier` instead.
+The two knex config options this library overrides are `wrapIdentifier` and `postProcessResponse`. If you provide those options they will be run when keys are in database format. If you wish to run when keys are in application format use `appWrapIdentifier` and `appPostProcessResponse` instead.
 
 ## New options
 
@@ -78,7 +78,7 @@ A function which will run after modifications made by this library, when keys ar
 #### appStringcase
 
 ```
-<default: 'camelcase'>
+default 'camelcase'
 ```
 
 A function or a string which describes how keys should re-enter your application from the database. If a string is provided keys will be modified by their respective function found in [npm stringcase](https://www.npmjs.com/package/stringcase). Alternatively a function can be passed, taking the string in its current state which will give you more control to suit your needs.
@@ -88,7 +88,7 @@ This parameter may be an array describing more than one alteration in sequence. 
 #### dbStringcase
 
 ```
-<default: 'snakecase'>
+default 'snakecase'
 ```
 
 A function or a string which describes how keys should be modified when headed to the database. This attribute may also be be an array and operates very similarly to `appStringcase` above.
