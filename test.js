@@ -212,6 +212,31 @@ describe('postProcessResponse', () => {
         }]);
     });
 
+    it('ignore deep results', () => {
+        const { postProcessResponse } = knexStringcase({
+            ignoreStringcase (obj, name) {
+                return name !== 'root';
+            }
+        });
+        const queryContext = { test: 'root.test_three' };
+
+        assert.deepEqual(postProcessResponse([{
+            test: {
+                test_two: 'hi'
+            },
+            test_three: {
+                test_four: 'there'
+            }
+        }], queryContext), [{
+            test: {
+                test_two: 'hi'
+            },
+            testThree: {
+                test_four: 'there'
+            }
+        }]);
+    });
+
     it('convert keys when response is an instance of a class', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
