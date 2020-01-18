@@ -28,6 +28,12 @@ By leveraging these configuration options provided by knex `postProcessResponse`
 
 Knex provides these options but this library acts as a helper to make the conversions simpler.
 
+## Upgrading 1.3.0 -> 1.4.0
+
+* Option `dbStringcase` is renamed `stringcase`.
+* Option `ignoreStringcase` has been removed.
+* Objects are not converted recursively anymore you must explicitly define which nested objects to convert using the `recursiveStringcase` option.
+
 ## Installation
 
 ```
@@ -85,7 +91,7 @@ A function or a string which describes how keys should re-enter your application
 
 This parameter may be an array describing more than one alteration in sequence. eg `['snakecase', 'uppercase']`.
 
-#### dbStringcase
+#### stringcase
 
 ```
 default 'snakecase'
@@ -93,19 +99,19 @@ default 'snakecase'
 
 A function or a string which describes how keys should be modified when headed to the database. This attribute may also be be an array and operates very similarly to `appStringcase` above.
 
-#### ignoreStringcase
+#### recursiveStringcase
 
 ```javascript
 (obj: array|object, name: string, queryContext: object) => boolean
 ```
 
-A function which can be used to skip conversion on objects. If true is returned the object is not converted and will be left as is. This is useful in case you are using moment for your dates for example.
+A function which can be used to perform conversion on nested objects returned from the databse. If true is returned the object is converted. This is useful in case you are using sub queries or just want your processed JSON fields converted.
 
-`ignoreStringcase: (obj) => moment.isMoment(obj)`
+`recursiveStringcase: () => true`
 
-The second parameter will give you the name of the field. This is nested in dot notation `"root.name.name"`. If you wish to convert only shallow results simply ignore everything beyond root.
+The second parameter will give you the name of the field in dot notation `"root.name.name"`.
 
-`ignoreStringcase: (obj, name) => name !== 'root'`
+`recursiveStringcase: (obj, name) => name === 'root.my_field'`
 
 ## Contribute
 

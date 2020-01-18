@@ -31,9 +31,9 @@ describe('initialise', () => {
             appWrapIdentifier() {},
             appPostProcessResponse() {},
             appStringcase: 'camelcase',
-            dbStringcase: 'snakecase',
+            stringcase: 'snakecase',
             otherOption: 'hello',
-            ignoreStringcase () {}
+            recursiveStringcase () {}
         };
         const result = knexStringcase(config);
 
@@ -43,9 +43,9 @@ describe('initialise', () => {
         assert.strict.equal(result.appWrapIdentifier, undefined);
         assert.strict.equal(result.appPostProcessResponse, undefined);
         assert.strict.equal(result.appStringcase, undefined);
-        assert.strict.equal(result.dbStringcase, undefined);
+        assert.strict.equal(result.stringcase, undefined);
         assert.strict.equal(result.otherOption, 'hello');
-        assert.strict.equal(result.ignoreStringcase, undefined);
+        assert.strict.equal(result.recursiveStringcase, undefined);
     });
 
     it('return new object', () => {
@@ -71,7 +71,7 @@ describe('postProcessResponse', () => {
         });
     });
 
-    it('deep convert keys', () => {
+    it('do not deep convert keys', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
@@ -82,7 +82,7 @@ describe('postProcessResponse', () => {
             test_three: 11
         }]), [{
             test: {
-                testTwo: now
+                test_two: now
             },
             testThree: 11
         }]);
@@ -95,33 +95,33 @@ describe('postProcessResponse', () => {
         assert.deepEqual(postProcessResponse(['hi', now, 11]), ['hi', now, 11]);
     });
 
-    it('ignore specified objects', () => {
+    it('recursively convert specified objects', () => {
         const { postProcessResponse } = knexStringcase({
-            ignoreStringcase (obj) {
-                return obj.skip_this === true;
+            recursiveStringcase (obj) {
+                return obj.convert_this === true;
             }
         });
 
         assert.deepEqual(postProcessResponse([{
             test_two: {
-                not_skipped: 'hi'
+                is_skipped: 'hi'
             },
             test_three: {
-                skip_this: true
+                convert_this: true
             }
         }]), [{
             testTwo: {
-                notSkipped: 'hi'
+                is_skipped: 'hi'
             },
             testThree: {
-                skip_this: true
+                convertThis: true
             }
         }]);
     });
 
-    it('ignore using specified name', () => {
+    it('recursively convert using specified name', () => {
         const { postProcessResponse } = knexStringcase({
-            ignoreStringcase (obj, name) {
+            recursiveStringcase (obj, name) {
                 return name === 'root.test_three';
             }
         });
@@ -135,42 +135,18 @@ describe('postProcessResponse', () => {
             }
         }]), [{
             test: {
-                testTwo: 'hi'
-            },
-            testThree: {
-                test_four: 'there'
-            }
-        }]);
-    });
-
-    it('can ignore array using specified name', () => {
-        const { postProcessResponse } = knexStringcase({
-            ignoreStringcase (obj, name) {
-                return name === 'root.test_three';
-            }
-        });
-
-        assert.deepEqual(postProcessResponse([{
-            test: {
                 test_two: 'hi'
             },
-            test_three: [{
-                test_four: 'there'
-            }]
-        }]), [{
-            test: {
-                testTwo: 'hi'
-            },
-            testThree: [{
-                test_four: 'there'
-            }]
+            testThree: {
+                testFour: 'there'
+            }
         }]);
     });
 
-    it('ignore using specified deep name', () => {
+    it('recursively convert using specified deep name', () => {
         const { postProcessResponse } = knexStringcase({
-            ignoreStringcase (obj, name) {
-                return name === 'root.test.test_four';
+            recursiveStringcase (obj, name) {
+                return name.startsWith('root.test') && name !== 'root.test.test_two';
             }
         });
 
@@ -181,15 +157,15 @@ describe('postProcessResponse', () => {
             }
         }]), [{
             test: {
-                testTwo: { testThree: 'hi' },
-                testFour: { test_five: 'there' }
+                testTwo: { test_three: 'hi' },
+                testFour: { testFive: 'there' }
             }
         }]);
     });
 
-    it('ignore using queryContext', () => {
+    it('recursively convert using queryContext', () => {
         const { postProcessResponse } = knexStringcase({
-            ignoreStringcase (obj, name, queryContext) {
+            recursiveStringcase (obj, name, queryContext) {
                 return queryContext.test === name;
             }
         });
@@ -204,21 +180,20 @@ describe('postProcessResponse', () => {
             }
         }], queryContext), [{
             test: {
-                testTwo: 'hi'
+                test_two: 'hi'
             },
             testThree: {
-                test_four: 'there'
+                testFour: 'there'
             }
         }]);
     });
 
-    it('ignore deep results', () => {
+    it('recursively convert deep results', () => {
         const { postProcessResponse } = knexStringcase({
-            ignoreStringcase (obj, name) {
-                return name !== 'root';
+            recursiveStringcase () {
+                return true;
             }
         });
-        const queryContext = { test: 'root.test_three' };
 
         assert.deepEqual(postProcessResponse([{
             test: {
@@ -227,12 +202,12 @@ describe('postProcessResponse', () => {
             test_three: {
                 test_four: 'there'
             }
-        }], queryContext), [{
+        }]), [{
             test: {
-                test_two: 'hi'
+                testTwo: 'hi'
             },
             testThree: {
-                test_four: 'there'
+                testFour: 'there'
             }
         }]);
     });
@@ -326,7 +301,7 @@ describe('wrapIdentifier', () => {
 
     it('customise conversion', () => {
         const { wrapIdentifier } = knexStringcase({
-            dbStringcase: ['snakecase', 'uppercase', value => value.slice(0, -1)]
+            stringcase: ['snakecase', 'uppercase', value => value.slice(0, -1)]
         });
 
         assert.strict.equal(wrapIdentifier('test', val => val), 'TES');

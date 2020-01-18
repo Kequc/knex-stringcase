@@ -1,8 +1,9 @@
-module.exports = buildConverter;
+module.exports = converterFactory;
 
 const stringcase = require('stringcase');
 
-function buildConverter (arr) {
+// String converter
+function converterFactory (arr) {
     const modifiers = (Array.isArray(arr) ? arr : [arr]).map(getModifier);
     const cache = new Map();
 
@@ -14,7 +15,7 @@ function buildConverter (arr) {
     };
 }
 
-// Return a function for use in converting strings
+// Function for use in converting strings
 function getModifier (modifier) {
     switch (typeof modifier) {
         case 'string': return getStringcase(modifier);
@@ -23,7 +24,7 @@ function getModifier (modifier) {
     }
 }
 
-// Return a function from stringcase
+// Function from stringcase
 function getStringcase (name) {
     const modifier = stringcase[name];
 

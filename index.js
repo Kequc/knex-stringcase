@@ -1,27 +1,28 @@
 module.exports = knexStringcase;
 
-const buildConverter = require('./build-converter.js');
-const buildKeyConverter = require('./build-key-converter.js');
+const converterFactory = require('./converter-factory.js');
+const keyConverterFactory = require('./key-converter-factory.js');
 
+// Add conversions to knex config
 function knexStringcase (config = {}) {
     const options = Object.assign({}, config); // clone
 
     delete options.appWrapIdentifier;
     delete options.appPostProcessResponse;
     delete options.appStringcase;
-    delete options.dbStringcase;
-    delete options.ignoreStringcase;
+    delete options.stringcase;
+    delete options.recursiveStringcase;
 
     options.wrapIdentifier = buildWrapIdentifier(
-        buildConverter(config.dbStringcase || 'snakecase'),
+        converterFactory(config.stringcase || 'snakecase'),
         config.appWrapIdentifier,
         config.wrapIdentifier
     );
 
     options.postProcessResponse = buildPostProcessResponse(
-        buildKeyConverter(
-            buildConverter(config.appStringcase || 'camelcase'),
-            config.ignoreStringcase
+        keyConverterFactory(
+            converterFactory(config.appStringcase || 'camelcase'),
+            config.recursiveStringcase
         ),
         config.postProcessResponse,
         config.appPostProcessResponse
@@ -30,7 +31,7 @@ function knexStringcase (config = {}) {
     return options;
 }
 
-// Convert value on the way to the database
+// Convert value for database
 function buildWrapIdentifier (converter, before, after) {
     return function wrapIdentifier (value, origImpl, queryContext) {
         let output = value;
@@ -51,7 +52,7 @@ function buildWrapIdentifier (converter, before, after) {
     };
 }
 
-// Process result returned from the database
+// Process result from database
 function buildPostProcessResponse (keyConverter, before, after) {
     return function postProcessResponse (result, queryContext) {
         let output = result;
