@@ -13,13 +13,13 @@ function knexStringcase (config = {}) {
     delete options.stringcase;
     delete options.recursiveStringcase;
 
-    options.wrapIdentifier = buildWrapIdentifier(
+    options.wrapIdentifier = wrapIdentifierFactory(
         converterFactory(config.stringcase || 'snakecase'),
         config.appWrapIdentifier,
         config.wrapIdentifier
     );
 
-    options.postProcessResponse = buildPostProcessResponse(
+    options.postProcessResponse = postProcessResponseFactory(
         keyConverterFactory(
             converterFactory(config.appStringcase || 'camelcase'),
             config.recursiveStringcase
@@ -32,7 +32,7 @@ function knexStringcase (config = {}) {
 }
 
 // Convert value for database
-function buildWrapIdentifier (converter, before, after) {
+function wrapIdentifierFactory (converter, before, after) {
     return function wrapIdentifier (value, origImpl, queryContext) {
         let output = value;
 
@@ -53,7 +53,7 @@ function buildWrapIdentifier (converter, before, after) {
 }
 
 // Process result from database
-function buildPostProcessResponse (keyConverter, before, after) {
+function postProcessResponseFactory (keyConverter, before, after) {
     return function postProcessResponse (result, queryContext) {
         let output = result;
 
