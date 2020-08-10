@@ -105,11 +105,11 @@ A function or a string which describes how keys should be modified when headed t
 (obj: array|object, name: string, queryContext: object) => boolean
 ```
 
-A function which can be used to perform conversion on nested objects returned from the databse. If true is returned the object is converted. This is useful in case you are using sub queries or just want your processed JSON fields converted.
+A function which can be used to perform conversion on nested objects returned from the database. If true is returned the object is converted. This is useful in case you are using sub queries or just want your processed JSON fields converted.
 
 `recursiveStringcase: () => true`
 
-The second parameter will give you the name of the field in dot notation `"root.name.name"`.
+The second parameter will give you the name of the field in database format in dot notation prefixed with root `"root.name.name"`.
 
 `recursiveStringcase: (obj, name) => name === 'root.my_field'`
 

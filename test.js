@@ -1,5 +1,5 @@
 const assert = require('assert');
-const knexStringcase = require('./index.js');
+const knexStringcase = require('./src/index.js');
 
 function it (description, cb) {
     process.stdout.write(' \u00B7 ' + description);
