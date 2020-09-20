@@ -21,7 +21,7 @@ function keyConverterFactory (converter, recursive) {
 
 // Value remains unchanged
 function isRaw (recursive, value, path, queryContext) {
-    if (!(value instanceof Object)) return true;
+    if (typeof value !== 'object' || value === null) return true;
     if (value instanceof Date) return true;
     if (path === 'root') return false;
     if (typeof recursive !== 'function') return true;
