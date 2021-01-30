@@ -18,9 +18,9 @@ function converterFactory (arr) {
 // Function for use in converting strings
 function getModifier (modifier) {
     switch (typeof modifier) {
-        case 'string': return getStringcase(modifier);
-        case 'function': return modifier;
-        default: throw new Error('Conversion must be string or function');
+    case 'string': return getStringcase(modifier);
+    case 'function': return modifier;
+    default: throw new Error('Conversion must be string or function');
     }
 }
 

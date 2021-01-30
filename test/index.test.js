@@ -12,8 +12,8 @@ describe('initialise', function () {
 
     it('with parameters', function () {
         const config = {
-            appWrapIdentifier() {},
-            appPostProcessResponse() {},
+            appWrapIdentifier () {},
+            appPostProcessResponse () {},
             appStringcase: 'camelcase',
             stringcase: 'snakecase',
             otherOption: 'hello',
@@ -201,7 +201,7 @@ describe('postProcessResponse', function () {
         const now = new Date();
 
         class TextRow {
-            constructor() {
+            constructor () {
                 this.test = 'hi';
                 this.test_two = now;
                 this.test_three = 11;
