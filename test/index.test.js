@@ -1,24 +1,8 @@
 const assert = require('assert');
-const knexStringcase = require('./src/index.js');
+const knexStringcase = require('../src/index.js');
 
-function it (description, cb) {
-    process.stdout.write(' \u00B7 ' + description);
-    try {
-        cb();
-        process.stdout.write(' \x1b[32m\u2713\x1b[0m\n');
-    } catch (err) {
-        process.stdout.write(' \x1b[31m\u2717\x1b[0m\n');
-        throw err;
-    }
-}
-
-function describe (description, cb) {
-    process.stdout.write(description + '\n');
-    cb();
-}
-
-describe('initialise', () => {
-    it('without parameters', () => {
+describe('initialise', function () {
+    it('without parameters', function () {
         const result = knexStringcase();
 
         assert.strict.equal(typeof result, 'object');
@@ -26,7 +10,7 @@ describe('initialise', () => {
         assert.strict.equal(typeof result.wrapIdentifier, 'function');
     });
 
-    it('with parameters', () => {
+    it('with parameters', function () {
         const config = {
             appWrapIdentifier() {},
             appPostProcessResponse() {},
@@ -48,19 +32,19 @@ describe('initialise', () => {
         assert.strict.equal(result.recursiveStringcase, undefined);
     });
 
-    it('return new object', () => {
+    it('return new object', function () {
         const config = {};
 
         assert.strict.notEqual(knexStringcase(config), config);
     });
 });
 
-describe('postProcessResponse', () => {
-    it('convert keys', () => {
+describe('postProcessResponse', function () {
+    it('convert keys', function () {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse({
+        assert.deepStrictEqual(postProcessResponse({
             test: 'hi',
             test_two: now,
             test_three: 11
@@ -71,11 +55,11 @@ describe('postProcessResponse', () => {
         });
     });
 
-    it('do not deep convert keys', () => {
+    it('do not deep convert keys', function () {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse([{
+        assert.deepStrictEqual(postProcessResponse([{
             test: {
                 test_two: now
             },
@@ -88,21 +72,21 @@ describe('postProcessResponse', () => {
         }]);
     });
 
-    it('return raw values', () => {
+    it('return raw values', function () {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse(['hi', now, 11]), ['hi', now, 11]);
+        assert.deepStrictEqual(postProcessResponse(['hi', now, 11]), ['hi', now, 11]);
     });
 
-    it('recursively convert specified objects', () => {
+    it('recursively convert specified objects', function () {
         const { postProcessResponse } = knexStringcase({
             recursiveStringcase (obj) {
                 return obj.convert_this === true;
             }
         });
 
-        assert.deepEqual(postProcessResponse([{
+        assert.deepStrictEqual(postProcessResponse([{
             test_two: {
                 is_skipped: 'hi'
             },
@@ -119,14 +103,14 @@ describe('postProcessResponse', () => {
         }]);
     });
 
-    it('recursively convert using specified name', () => {
+    it('recursively convert using specified name', function () {
         const { postProcessResponse } = knexStringcase({
             recursiveStringcase (obj, name) {
                 return name === 'root.test_three';
             }
         });
 
-        assert.deepEqual(postProcessResponse([{
+        assert.deepStrictEqual(postProcessResponse([{
             test: {
                 test_two: 'hi'
             },
@@ -143,14 +127,14 @@ describe('postProcessResponse', () => {
         }]);
     });
 
-    it('recursively convert using specified deep name', () => {
+    it('recursively convert using specified deep name', function () {
         const { postProcessResponse } = knexStringcase({
             recursiveStringcase (obj, name) {
                 return name.startsWith('root.test') && name !== 'root.test.test_two';
             }
         });
 
-        assert.deepEqual(postProcessResponse([{
+        assert.deepStrictEqual(postProcessResponse([{
             test: {
                 test_two: { test_three: 'hi' },
                 test_four: { test_five: 'there' }
@@ -163,7 +147,7 @@ describe('postProcessResponse', () => {
         }]);
     });
 
-    it('recursively convert using queryContext', () => {
+    it('recursively convert using queryContext', function () {
         const { postProcessResponse } = knexStringcase({
             recursiveStringcase (obj, name, queryContext) {
                 return queryContext.test === name;
@@ -171,7 +155,7 @@ describe('postProcessResponse', () => {
         });
         const queryContext = { test: 'root.test_three' };
 
-        assert.deepEqual(postProcessResponse([{
+        assert.deepStrictEqual(postProcessResponse([{
             test: {
                 test_two: 'hi'
             },
@@ -188,14 +172,14 @@ describe('postProcessResponse', () => {
         }]);
     });
 
-    it('recursively convert deep results', () => {
+    it('recursively convert deep results', function () {
         const { postProcessResponse } = knexStringcase({
             recursiveStringcase () {
                 return true;
             }
         });
 
-        assert.deepEqual(postProcessResponse([{
+        assert.deepStrictEqual(postProcessResponse([{
             test: {
                 test_two: 'hi'
             },
@@ -212,7 +196,7 @@ describe('postProcessResponse', () => {
         }]);
     });
 
-    it('convert keys when response is an instance of a class', () => {
+    it('convert keys when response is an instance of a class', function () {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
@@ -224,25 +208,25 @@ describe('postProcessResponse', () => {
             }
         }
 
-        assert.deepEqual(postProcessResponse(new TextRow()), {
+        assert.deepStrictEqual(postProcessResponse(new TextRow()), {
             test: 'hi',
             testTwo: now,
             testThree: 11
         });
     });
 
-    it('customise conversion', () => {
+    it('customise conversion', function () {
         const { postProcessResponse } = knexStringcase({
             appStringcase: ['camelcase', 'lowercase', value => value.slice(0, -1)]
         });
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse({ 'TEST': 'hi' }), { tes: 'hi' });
-        assert.deepEqual(postProcessResponse({ 'TEST_TWO': now }), { testtw: now });
-        assert.deepEqual(postProcessResponse({ 'TEST_THREE': 11 }), { testthre: 11 });
+        assert.deepStrictEqual(postProcessResponse({ 'TEST': 'hi' }), { tes: 'hi' });
+        assert.deepStrictEqual(postProcessResponse({ 'TEST_TWO': now }), { testtw: now });
+        assert.deepStrictEqual(postProcessResponse({ 'TEST_THREE': 11 }), { testthre: 11 });
     });
 
-    it('run before after functions', () => {
+    it('run before after functions', function () {
         const { postProcessResponse } = knexStringcase({
             postProcessResponse (output) {
                 return Object.assign({ what_this: 'ahhhhhhh' }, output);
@@ -253,7 +237,7 @@ describe('postProcessResponse', () => {
         });
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse({
+        assert.deepStrictEqual(postProcessResponse({
             test: 'hi',
             test_two: now,
             test_three: 11
@@ -266,11 +250,11 @@ describe('postProcessResponse', () => {
         });
     });
 
-    it('converts the same key multiple times', () => {
+    it('converts the same key multiple times', function () {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse([{
+        assert.deepStrictEqual(postProcessResponse([{
             test: 'hi',
             test_two: now,
             test_three: 11
@@ -290,8 +274,8 @@ describe('postProcessResponse', () => {
     });
 });
 
-describe('wrapIdentifier', () => {
-    it('convert values', () => {
+describe('wrapIdentifier', function () {
+    it('convert values', function () {
         const { wrapIdentifier } = knexStringcase();
 
         assert.strict.equal(wrapIdentifier('test', val => val), 'test');
@@ -299,7 +283,7 @@ describe('wrapIdentifier', () => {
         assert.strict.equal(wrapIdentifier('testThree', val => val), 'test_three');
     });
 
-    it('customise conversion', () => {
+    it('customise conversion', function () {
         const { wrapIdentifier } = knexStringcase({
             stringcase: ['snakecase', 'uppercase', value => value.slice(0, -1)]
         });
@@ -309,7 +293,7 @@ describe('wrapIdentifier', () => {
         assert.strict.equal(wrapIdentifier('testThree', val => val), 'TEST_THRE');
     });
 
-    it('run before after functions', () => {
+    it('run before after functions', function () {
         const { wrapIdentifier } = knexStringcase({
             appWrapIdentifier (output) {
                 return output + 'Hmmm';
@@ -324,7 +308,7 @@ describe('wrapIdentifier', () => {
         assert.strict.equal(wrapIdentifier('testThree', val => '1' + val), '1test_three_hmmmHm again');
     });
 
-    it('converts the same value multiple times', () => {
+    it('converts the same value multiple times', function () {
         const { wrapIdentifier } = knexStringcase();
 
         assert.strict.equal(wrapIdentifier('test', val => val), 'test');

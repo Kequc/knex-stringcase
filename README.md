@@ -115,4 +115,4 @@ The second parameter will give you the name of the field in database format in d
 
 ## Contribute
 
-Sure! Except for testing frameworks, typescript definitions, anything with a dependency.
+Sure! Except for typescript definitions and anything with a dependency.
