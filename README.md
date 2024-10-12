@@ -28,11 +28,9 @@ By leveraging these configuration options provided by knex `postProcessResponse`
 
 Knex provides these options but this library acts as a helper to make the conversions simpler.
 
-## Upgrading 1.3.0 -> 1.4.0
+## Upgrading 1.4.0 -> 1.5.0
 
-* Option `dbStringcase` is renamed `stringcase`.
-* Option `ignoreStringcase` has been removed.
-* Objects are not converted recursively anymore you must explicitly define which nested objects to convert using the `recursiveStringcase` option.
+* Typescript is supported out of the box.
 
 ## Installation
 
@@ -44,8 +42,8 @@ npm i knex-stringcase --save
 ## Usage
 
 ```javascript
-const knex = require('knex');
-const knexStringcase = require('knex-stringcase');
+import knex from 'knex';
+import knexStringcase from 'knex-stringcase';
 
 const configFromKnexReadme = {
   client: 'mysql',
@@ -115,4 +113,4 @@ The second parameter will give you the name of the field in database format in d
 
 ## Contribute
 
-Sure! Except for typescript definitions and anything with a dependency.
+Sure! Except for anything with a dependency.
