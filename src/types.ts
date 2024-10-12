@@ -15,7 +15,6 @@ export type AppWrapIdentifier = (value: string, queryContext?: unknown) => strin
 export type AppPostProcessResponse = (result: unknown, queryContext?: unknown) => unknown;
 
 export interface KnexStringcaseConfig {
-    [key: string]: unknown;
     appWrapIdentifier?: AppWrapIdentifier;
     appPostProcessResponse?: AppPostProcessResponse;
     appStringcase?: Modifier | Modifier[];
@@ -26,7 +25,6 @@ export interface KnexStringcaseConfig {
 }
 
 export interface KnexOptions {
-    [key: string]: unknown;
     wrapIdentifier: WrapIdentifier;
     postProcessResponse: PostProcessResponse;
 }

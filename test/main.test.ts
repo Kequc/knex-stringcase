@@ -25,11 +25,16 @@ describe('initialise', function () {
         assert.strict.equal(typeof result, 'object');
         assert.strict.equal(typeof result.postProcessResponse, 'function');
         assert.strict.equal(typeof result.wrapIdentifier, 'function');
+        // @ts-ignore
         assert.strict.equal(result.appWrapIdentifier, undefined);
+        // @ts-ignore
         assert.strict.equal(result.appPostProcessResponse, undefined);
+        // @ts-ignore
         assert.strict.equal(result.appStringcase, undefined);
+        // @ts-ignore
         assert.strict.equal(result.stringcase, undefined);
         assert.strict.equal(result.otherOption, 'hello');
+        // @ts-ignore
         assert.strict.equal(result.recursiveStringcase, undefined);
     });
 
