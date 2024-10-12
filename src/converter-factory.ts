@@ -1,22 +1,23 @@
-module.exports = converterFactory;
-
-const stringcase = require('stringcase');
+import stringcase from 'stringcase';
+import { Converter, Modifier } from './types';
 
 // String converter
-function converterFactory (arr) {
-    const modifiers = (Array.isArray(arr) ? arr : [arr]).map(getModifier);
-    const cache = new Map();
 
-    return function converter (value) {
+export default function converterFactory (arr: Modifier | Modifier[]): Converter {
+    const modifiers = (Array.isArray(arr) ? arr : [arr]).map(getModifier);
+    const cache = new Map<string, string>();
+
+    return function converter (value: string): string {
         if (!cache.has(value)) {
             cache.set(value, modifiers.reduce((acc, cur) => cur(acc), value));
         }
-        return cache.get(value);
+        return cache.get(value) as string;
     };
 }
 
 // Function for use in converting strings
-function getModifier (modifier) {
+
+function getModifier (modifier: Modifier): Converter {
     switch (typeof modifier) {
     case 'string': return getStringcase(modifier);
     case 'function': return modifier;
@@ -25,7 +26,8 @@ function getModifier (modifier) {
 }
 
 // Function from stringcase
-function getStringcase (name) {
+
+function getStringcase (name: string): Converter {
     const modifier = stringcase[name];
 
     if (typeof modifier === 'function') {

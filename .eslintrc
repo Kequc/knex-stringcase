@@ -14,11 +14,5 @@
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
         "space-before-function-paren": ["error", "always"]
-    },
-    "overrides": [
-        {
-            "files": ["*.test.js"],
-            "globals": { "describe": "readonly", "it": "readonly" }
-        }
-    ]
+    }
 }
