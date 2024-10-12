@@ -1,6 +1,6 @@
 {
     "name": "knex-stringcase",
-    "version": "1.4.6",
+    "version": "1.5.0",
     "description": "Helper switches key case for npm knex",
     "main": "./dist/main.js",
     "types": "./dist/main.d.ts",
@@ -8,7 +8,9 @@
         "build": "tsc",
         "test": "kequtest --ts"
     },
-    "files": ["dist"],
+    "files": [
+        "dist"
+    ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Kequc/knex-stringcase.git"
