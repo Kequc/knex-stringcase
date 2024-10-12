@@ -1,5 +1,6 @@
-const assert = require('assert');
-const knexStringcase = require('../src/index.js');
+import 'kequtest';
+import assert from 'assert';
+import knexStringcase from '../src/main';
 
 describe('initialise', function () {
     it('without parameters', function () {
@@ -12,12 +13,12 @@ describe('initialise', function () {
 
     it('with parameters', function () {
         const config = {
-            appWrapIdentifier () {},
-            appPostProcessResponse () {},
+            appWrapIdentifier: () => '',
+            appPostProcessResponse: () => ({}),
             appStringcase: 'camelcase',
             stringcase: 'snakecase',
             otherOption: 'hello',
-            recursiveStringcase () {}
+            recursiveStringcase: () => false,
         };
         const result = knexStringcase(config);
 
@@ -150,7 +151,7 @@ describe('postProcessResponse', function () {
     it('recursively convert using queryContext', function () {
         const { postProcessResponse } = knexStringcase({
             recursiveStringcase (obj, name, queryContext) {
-                return queryContext.test === name;
+                return (queryContext as Record<string, string>).test === name;
             }
         });
         const queryContext = { test: 'root.test_three' };
@@ -201,6 +202,10 @@ describe('postProcessResponse', function () {
         const now = new Date();
 
         class TextRow {
+            test: string;
+            test_two: Date;
+            test_three: number;
+
             constructor () {
                 this.test = 'hi';
                 this.test_two = now;

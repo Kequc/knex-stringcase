@@ -1,10 +1,10 @@
-module.exports = knexStringcase;
-
-const converterFactory = require('./converter-factory.js');
-const keyConverterFactory = require('./key-converter-factory.js');
+import converterFactory from './converter-factory';
+import keyConverterFactory from './key-converter-factory';
+import { AppPostProcessResponse, AppWrapIdentifier, Converter, KeyConverter, KnexOptions, KnexStringcaseConfig, PostProcessResponse, WrapIdentifier } from './types';
 
 // Add conversions to knex config
-function knexStringcase (config = {}) {
+
+export default function knexStringcase (config: KnexStringcaseConfig = {}) {
     const options = Object.assign({}, config); // clone
 
     delete options.appWrapIdentifier;
@@ -16,23 +16,24 @@ function knexStringcase (config = {}) {
     options.wrapIdentifier = wrapIdentifierFactory(
         converterFactory(config.stringcase || 'snakecase'),
         config.appWrapIdentifier,
-        config.wrapIdentifier
+        config.wrapIdentifier,
     );
 
     options.postProcessResponse = postProcessResponseFactory(
         keyConverterFactory(
             converterFactory(config.appStringcase || 'camelcase'),
-            config.recursiveStringcase
+            config.recursiveStringcase,
         ),
         config.postProcessResponse,
-        config.appPostProcessResponse
+        config.appPostProcessResponse,
     );
 
-    return options;
+    return options as KnexOptions;
 }
 
 // Convert value for database
-function wrapIdentifierFactory (converter, before, after) {
+
+function wrapIdentifierFactory (converter: Converter, before?: AppWrapIdentifier, after?: WrapIdentifier): WrapIdentifier {
     return function wrapIdentifier (value, origImpl, queryContext) {
         let output = value;
 
@@ -53,7 +54,8 @@ function wrapIdentifierFactory (converter, before, after) {
 }
 
 // Process result from database
-function postProcessResponseFactory (keyConverter, before, after) {
+
+function postProcessResponseFactory (keyConverter: KeyConverter, before?: PostProcessResponse, after?: AppPostProcessResponse): PostProcessResponse {
     return function postProcessResponse (result, queryContext) {
         let output = result;
 
