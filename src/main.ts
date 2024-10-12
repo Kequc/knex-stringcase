@@ -14,14 +14,14 @@ export default function knexStringcase (config: KnexStringcaseConfig = {}) {
     delete options.recursiveStringcase;
 
     options.wrapIdentifier = wrapIdentifierFactory(
-        converterFactory(config.stringcase || 'snakecase'),
+        converterFactory(config.stringcase ?? 'snakecase'),
         config.appWrapIdentifier,
         config.wrapIdentifier,
     );
 
     options.postProcessResponse = postProcessResponseFactory(
         keyConverterFactory(
-            converterFactory(config.appStringcase || 'camelcase'),
+            converterFactory(config.appStringcase ?? 'camelcase'),
             config.recursiveStringcase,
         ),
         config.postProcessResponse,
