@@ -6,7 +6,7 @@ type ExcludedKeys = 'appWrapIdentifier' | 'appPostProcessResponse' | 'appStringc
 
 // Add conversions to knex config
 
-export default function knexStringcase<T extends KnexStringcaseConfig>(config: T = {} as T) {
+export default function knexStringcase<T extends KnexStringcaseConfig>(config?: T) {
     const options = Object.assign({}, config); // clone
 
     delete options.appWrapIdentifier;
@@ -16,18 +16,18 @@ export default function knexStringcase<T extends KnexStringcaseConfig>(config: T
     delete options.recursiveStringcase;
 
     options.wrapIdentifier = wrapIdentifierFactory(
-        converterFactory(config.stringcase ?? 'snakecase'),
-        config.appWrapIdentifier,
-        config.wrapIdentifier,
+        converterFactory(config?.stringcase ?? 'snakecase'),
+        config?.appWrapIdentifier,
+        config?.wrapIdentifier,
     );
 
     options.postProcessResponse = postProcessResponseFactory(
         keyConverterFactory(
-            converterFactory(config.appStringcase ?? 'camelcase'),
-            config.recursiveStringcase,
+            converterFactory(config?.appStringcase ?? 'camelcase'),
+            config?.recursiveStringcase,
         ),
-        config.postProcessResponse,
-        config.appPostProcessResponse,
+        config?.postProcessResponse,
+        config?.appPostProcessResponse,
     );
 
     return options as Omit<T, ExcludedKeys> & KnexOptions;

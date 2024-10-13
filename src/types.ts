@@ -2,9 +2,9 @@ export type Converter = (input: string) => string;
 
 export type Modifier = string | Converter;
 
-export type Recursive = (value: Record<string, unknown>, path: string, queryContext: unknown) => boolean;
+export type Recursive = (value: Record<string, unknown>, path: string, queryContext?: unknown) => boolean;
 
-export type KeyConverter = (value: unknown, path: string, queryContext: unknown) => unknown;
+export type KeyConverter = (value: unknown, path: string, queryContext?: unknown) => unknown;
 
 export type WrapIdentifier = (value: string, origImpl: (value: string) => string, queryContext?: unknown) => string;
 
@@ -15,6 +15,7 @@ export type AppWrapIdentifier = (value: string, queryContext?: unknown) => strin
 export type AppPostProcessResponse = (result: unknown, queryContext?: unknown) => unknown;
 
 export interface KnexStringcaseConfig {
+    [key: string]: unknown;
     appWrapIdentifier?: AppWrapIdentifier;
     appPostProcessResponse?: AppPostProcessResponse;
     appStringcase?: Modifier | Modifier[];
