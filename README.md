@@ -26,7 +26,7 @@ By leveraging these configuration options provided by knex `postProcessResponse`
 
 * http://knexjs.org/#Installation-wrap-identifier
 
-Knex provides these options but this library acts as a helper to make the conversions simpler.
+Knex provides these options but this library acts as a helper to make the conversions for you.
 
 ## Upgrading 1.4.0 -> 1.5.0
 
@@ -35,8 +35,8 @@ Knex provides these options but this library acts as a helper to make the conver
 ## Installation
 
 ```
-npm i knex --save
-npm i knex-stringcase --save
+npm i knex
+npm i knex-stringcase
 ```
 
 ## Usage
@@ -66,7 +66,7 @@ The two knex config options this library overrides are `wrapIdentifier` and `pos
 #### appWrapIdentifier
 
 ```javascript
-(value: string, queryContext: object) => string
+(value: string, queryContext?: unknown) => string
 ```
 
 A function which will run before modifications made by this library, when keys are still in application format on the way to the database.
@@ -74,7 +74,7 @@ A function which will run before modifications made by this library, when keys a
 #### appPostProcessResponse
 
 ```javascript
-(result: array|object, queryContext: object) => array|object
+(result: unknown, queryContext?: unknown) => unknown
 ```
 
 A function which will run after modifications made by this library, when keys are in application format.
@@ -100,16 +100,16 @@ A function or a string which describes how keys should be modified when headed t
 #### recursiveStringcase
 
 ```javascript
-(obj: array|object, name: string, queryContext: object) => boolean
+(value: object, path: string, queryContext?: unknown) => boolean
 ```
 
-A function which can be used to perform conversion on nested objects returned from the database. If true is returned the object is converted. This is useful in case you are using sub queries or just want your processed JSON fields converted.
+A function which can be used to perform conversion on nested objects returned from the database. This is useful in case you are using sub queries or just want your processed JSON fields converted. If true is returned the object is converted.
 
 `recursiveStringcase: () => true`
 
-The second parameter will give you the name of the field in database format in dot notation prefixed with root `"root.name.name"`.
+The first parameter is the object that can be converted. The second parameter will give you the path to the object in database format in dot notation prefixed with root ie. `"root.name.name"`.
 
-`recursiveStringcase: (obj, name) => name === 'root.my_field'`
+`recursiveStringcase: (value, path) => path === 'root.my_field'`
 
 ## Contribute
 

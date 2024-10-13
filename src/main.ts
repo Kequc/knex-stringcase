@@ -35,7 +35,11 @@ export default function knexStringcase<T extends KnexStringcaseConfig>(config?: 
 
 // Convert value for database
 
-function wrapIdentifierFactory (converter: Converter, before?: AppWrapIdentifier, after?: WrapIdentifier): WrapIdentifier {
+function wrapIdentifierFactory (
+    converter: Converter,
+    before?: AppWrapIdentifier,
+    after?: WrapIdentifier,
+): WrapIdentifier {
     return function wrapIdentifier (value, origImpl, queryContext) {
         let output = value;
 
@@ -57,7 +61,11 @@ function wrapIdentifierFactory (converter: Converter, before?: AppWrapIdentifier
 
 // Process result from database
 
-function postProcessResponseFactory (keyConverter: KeyConverter, before?: PostProcessResponse, after?: AppPostProcessResponse): PostProcessResponse {
+function postProcessResponseFactory (
+    keyConverter: KeyConverter,
+    before?: PostProcessResponse,
+    after?: AppPostProcessResponse,
+): PostProcessResponse {
     return function postProcessResponse (result, queryContext) {
         let output = result;
 

@@ -1,10 +1,13 @@
-import { Converter, KeyConverter, Recursive } from './types';
+import { Converter, KeyConverter, RecursiveStringcase } from './types';
 
 // String converter for keys of an object
 
-export default function keyConverterFactory (converter: Converter, recursive?: Recursive): KeyConverter {
+export default function keyConverterFactory (
+    converter: Converter,
+    isRecursive?: RecursiveStringcase,
+): KeyConverter {
     return function keyConverter (value, path, queryContext): unknown {
-        if (isRaw(recursive, value, path, queryContext)) {
+        if (isStatic(value, path, isRecursive, queryContext)) {
             return value;
         }
         if (Array.isArray(value)) {
@@ -25,10 +28,15 @@ export default function keyConverterFactory (converter: Converter, recursive?: R
 
 // Value remains unchanged
 
-function isRaw (recursive: Recursive | undefined, value: unknown, path: string, queryContext: unknown): boolean {
+function isStatic (
+    value: unknown,
+    path: string,
+    isRecursive?: RecursiveStringcase,
+    queryContext?: unknown,
+): boolean {
     if (typeof value !== 'object' || value === null) return true;
     if (value instanceof Date) return true;
     if (path === 'root') return false;
-    if (typeof recursive !== 'function') return true;
-    return !recursive(value as Record<string, unknown>, path, queryContext);
+    if (typeof isRecursive === 'function') return !isRecursive(value, path, queryContext);
+    return true;
 }

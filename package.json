@@ -6,7 +6,7 @@
     "types": "./dist/main.d.ts",
     "scripts": {
         "build": "tsc",
-        "test": "kequtest --ts"
+        "test": "tsx --test"
     },
     "files": [
         "dist"
@@ -29,8 +29,7 @@
     "homepage": "https://github.com/Kequc/knex-stringcase#readme",
     "devDependencies": {
         "@types/node": "^22.7.5",
-        "kequtest": "^1.0.3",
-        "ts-node": "^10.9.2",
+        "tsx": "^4.19.1",
         "typescript": "^5.6.3"
     },
     "dependencies": {

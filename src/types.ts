@@ -2,7 +2,7 @@ export type Converter = (input: string) => string;
 
 export type Modifier = string | Converter;
 
-export type Recursive = (value: Record<string, unknown>, path: string, queryContext?: unknown) => boolean;
+export type RecursiveStringcase = (value: object, path: string, queryContext?: unknown) => boolean;
 
 export type KeyConverter = (value: unknown, path: string, queryContext?: unknown) => unknown;
 
@@ -20,7 +20,7 @@ export interface KnexStringcaseConfig {
     appPostProcessResponse?: AppPostProcessResponse;
     appStringcase?: Modifier | Modifier[];
     stringcase?: Modifier | Modifier[];
-    recursiveStringcase?: Recursive;
+    recursiveStringcase?: RecursiveStringcase;
     wrapIdentifier?: WrapIdentifier;
     postProcessResponse?: PostProcessResponse;
 }
