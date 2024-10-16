@@ -2,15 +2,15 @@
 
 **Easily convert database column names for use in your Node.js application when using [knex](https://www.npmjs.com/package/knex).**
 
-By default, this library assumes your database uses **snake_case** (e.g., `my_key`) and your Node.js application uses **camelCase** (e.g., `myKey`). However, these settings can be customized.
+By default, this library assumes your database uses **snake_case** and your Node.js application uses **camelCase**. However, these settings can be changed.
 
 ---
 
-## 🚀 Why Use knex-stringcase?
+## 🚀 Why Knex Stringcase?
 
 If your database columns follow a snake_case convention (a common practice), you might want to convert them into a more JavaScript-friendly camelCase for use in your application.
 
-For example, you might have database columns like `id`, `is_verified`, `deleted_at`, but your application prefers `id`, `isVerified`, `deletedAt`. This library takes care of that conversion.
+For example, you might have database columns `id`, `is_verified`, `deleted_at`, but your application prefers `id`, `isVerified`, `deletedAt`. This library takes care of that conversion.
 
 Example usage:
 
@@ -28,13 +28,13 @@ This will return an object:
 }
 ```
 
-This is mapping database fields like `is_verified` to `isVerified` and allows you to refer to `deleted_at` using `deletedAt`. No more snake_case to camelCase troubles!
+This is maps database field `is_verified` to `isVerified` and allows you to refer to `deleted_at` using `deletedAt`. No more snake_case to camelCase troubles!
 
 ---
 
 ## 🔧 How It Works
 
-The library leverages knex’s built-in configuration options: [`postProcessResponse`](http://knexjs.org/#Installation-post-process-response) and [`wrapIdentifier`](http://knexjs.org/#Installation-wrap-identifier), streamlining the conversion process between snake_case and camelCase without manual intervention.
+By leveraging knex’s built-in configuration options: [`wrapIdentifier`](http://knexjs.org/#Installation-wrap-identifier) and [`postProcessResponse`](http://knexjs.org/#Installation-post-process-response). You can use these configuration options yourself, this library just makes the conversions simpler.
 
 ---
 
@@ -42,14 +42,14 @@ The library leverages knex’s built-in configuration options: [`postProcessResp
 
 - **Full TypeScript support** as of version 1.5.0.
 - Automatic conversion between **snake_case** and **camelCase** or custom formats.
-- Option to extend and modify conversion logic with custom functions.
+- Extend and modify conversion logic with custom functions.
 - Handles nested objects and subqueries.
 
 ---
 
 ## 📦 Installation
 
-To install the package:
+Use npm (or yarn, pnpm, etc.):
 
 ```bash
 npm i knex-stringcase
@@ -59,30 +59,54 @@ npm i knex-stringcase
 
 ## 📘 Usage
 
-Integrating `knex-stringcase` with knex is straightforward:
+Add `knex-stringcase` to your knex configuration.
 
 ```javascript
 import knex from 'knex';
 import knexStringcase from 'knex-stringcase';
 
-const knexConfig = {
+const db = knex({
   client: 'mysql',
   connection: {
     host: '127.0.0.1',
     user: 'your_database_user',
     password: 'your_database_password',
     database: 'myapp_test'
-  }
-};
-
-const db = knex(knexStringcase(knexConfig));
+  },
+  ...knexStringcase(),
+});
 ```
 
-The two options this library overrides are `wrapIdentifier` and `postProcessResponse`. If you provide those options they will be run when keys are in database format. If you wish to run when keys are in application format use `appWrapIdentifier` and `appPostProcessResponse` instead (detailed below).
+This library overwrites `wrapIdentifier` and `postProcessResponse` pass them as library options instead, they will be run when keys are in database format. If you wish to run when keys are in application format use `appWrapIdentifier` and `appPostProcessResponse`.
 
 ---
 
-## 🆕 New Configuration Options
+## 📰 Library Options
+
+### `stringcase`
+
+**Default: 'snakecase'**
+
+Define how keys are modified when heading to the database. Accepts a string found in [`stringcase`](https://www.npmjs.com/package/stringcase) (e.g. `'snakecase'`), or a custom function.
+
+This parameter may be an array describing more than one alteration in sequence.
+
+```javascript
+stringcase: ['snakecase', (value) => 'db_' + value]
+// 'myKey' => 'db_my_key'
+```
+
+### `appStringcase`
+
+**Default: 'camelcase'**
+
+Define how keys are converted when returning to the application. This attribute may also be be an array and operates closely to how `stringcase` operates above.
+
+### `wrapIdentifier`
+
+In order to use this knex feature with the library ensure that you pass it as a parameter.
+
+[`Knex documentation`](http://knexjs.org/#Installation-wrap-identifier)
 
 ### `appWrapIdentifier`
 
@@ -91,30 +115,18 @@ The two options this library overrides are `wrapIdentifier` and `postProcessResp
 ```
 Custom function to modify identifiers before conversion. Runs when keys are still in application format, on the way to the database.
 
+### `postProcessResponse`
+
+In order to use this knex feature with the library ensure that you pass it as a parameter.
+
+[`Knex documentation`](http://knexjs.org/#Installation-post-process-response)
+
 ### `appPostProcessResponse`
 
 ```javascript
 (result: unknown, queryContext?: unknown) => unknown
 ```
 Custom function to process the response after conversion. Runs when keys are in application format, after the data is retrieved from the database.
-
-### `appStringcase`
-
-**Default: 'camelcase'**
-
-Define how keys are converted when returning to the application. Accepts a string (e.g., `'camelcase'`) found in [stringcase](https://www.npmjs.com/package/stringcase), or a custom function.
-
-This parameter may be an array describing more than one alteration in sequence.
-
-```javascript
-appStringcase: ['snakecase', 'uppercase']
-```
-
-### `stringcase`
-
-**Default: 'snakecase'**
-
-Define how keys are modified when heading to the database. This attribute may also be be an array and operates closely to how `appStringcase` operates above.
 
 ### `recursiveStringcase`
 
@@ -125,12 +137,16 @@ A function to control nested object conversions (useful for subqueries or JSON f
 
 ---
 
-## 🔄 Upgrade Guide (1.4.0 → 1.5.0)
+## 🔄 Upgrade Guide (1.5.0 → 1.5.5)
 
-Starting from version 1.5.0, **TypeScript support** is available out-of-the-box.
+`1.5.5`: `knexStringcase()` no longer has to wrap your entire knex configuration instead you can insert it into the options.
+
+`1.5.0`: **TypeScript support** is available out-of-the-box.
 
 ---
 
 ## 🤝 Contributing
 
 Contributions are welcome! Feel free to open an issue or submit a pull request. Note that we avoid dependencies whenever possible.
+
+---
