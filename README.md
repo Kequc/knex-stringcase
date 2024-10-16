@@ -1,116 +1,136 @@
 # knex-stringcase
 
-**Used with [npm knex](https://www.npmjs.com/package/knex) to convert database column names for use by a node application.**
+**Easily convert database column names for use in your Node.js application when using [knex](https://www.npmjs.com/package/knex).**
 
-By default this library assumes your database columns use snakecase `my_key` and your node application uses camelcase `myKey`, however these settings can be changed.
+By default, this library assumes your database uses **snake_case** (e.g., `my_key`) and your Node.js application uses **camelCase** (e.g., `myKey`). However, these settings can be customized.
 
-## Why
+---
 
-If the database has column names that are all in snakecase for example (a common practice), then that can be sub-ideal in your application.
+## 🚀 Why Use knex-stringcase?
 
-With this library:
+If your database columns follow a snake_case convention (a common practice), you might want to convert them into a more JavaScript-friendly camelCase for use in your application.
+
+For example, you might have database columns like `id`, `is_verified`, `deleted_at`, but your application prefers `id`, `isVerified`, `deletedAt`. This library takes care of that conversion.
+
+Example usage:
 
 ```javascript
 const user = await db('users')
-    .first('key', 'isVerified')
+    .first('id', 'isVerified')
     .where({ id: params.userId, deletedAt: null });
 ```
 
-Returns an object `{ key: 'xxxx', isVerified: true }` from a database where columns are named `id`, `key`, `is_verified`, and `deleted_at`. Removing your snakecase concerns.
-
-## How
-
-By leveraging these configuration options provided by knex `postProcessResponse` and `wrapIdentifier`.
-
-* http://knexjs.org/#Installation-post-process-response
-
-* http://knexjs.org/#Installation-wrap-identifier
-
-Knex provides these options but this library acts as a helper to make the conversions for you.
-
-## Upgrading 1.4.0 -> 1.5.0
-
-* Typescript is supported out of the box.
-
-## Installation
-
+This will return an object:
+```json
+{
+  "id": "xxxx",
+  "isVerified": true
+}
 ```
-npm i knex
+
+This is mapping database fields like `is_verified` to `isVerified` and allows you to refer to `deleted_at` using `deletedAt`. No more snake_case to camelCase troubles!
+
+---
+
+## 🔧 How It Works
+
+The library leverages knex’s built-in configuration options: [`postProcessResponse`](http://knexjs.org/#Installation-post-process-response) and [`wrapIdentifier`](http://knexjs.org/#Installation-wrap-identifier), streamlining the conversion process between snake_case and camelCase without manual intervention.
+
+---
+
+## 🌟 Features
+
+- **Full TypeScript support** as of version 1.5.0.
+- Automatic conversion between **snake_case** and **camelCase** or custom formats.
+- Option to extend and modify conversion logic with custom functions.
+- Handles nested objects and subqueries.
+
+---
+
+## 📦 Installation
+
+To install the package:
+
+```bash
 npm i knex-stringcase
 ```
 
-## Usage
+---
+
+## 📘 Usage
+
+Integrating `knex-stringcase` with knex is straightforward:
 
 ```javascript
 import knex from 'knex';
 import knexStringcase from 'knex-stringcase';
 
-const configFromKnexReadme = {
+const knexConfig = {
   client: 'mysql',
   connection: {
-    host : '127.0.0.1',
-    user : 'your_database_user',
-    password : 'your_database_password',
-    database : 'myapp_test'
+    host: '127.0.0.1',
+    user: 'your_database_user',
+    password: 'your_database_password',
+    database: 'myapp_test'
   }
 };
 
-const options = knexStringcase(configFromKnexReadme);
-const db = knex(options);
+const db = knex(knexStringcase(knexConfig));
 ```
 
-The two knex config options this library overrides are `wrapIdentifier` and `postProcessResponse`. If you provide those options they will be run when keys are in database format. If you wish to run when keys are in application format use `appWrapIdentifier` and `appPostProcessResponse` instead.
+The two options this library overrides are `wrapIdentifier` and `postProcessResponse`. If you provide those options they will be run when keys are in database format. If you wish to run when keys are in application format use `appWrapIdentifier` and `appPostProcessResponse` instead (detailed below).
 
-## New options
+---
 
-#### appWrapIdentifier
+## 🆕 New Configuration Options
+
+### `appWrapIdentifier`
 
 ```javascript
 (value: string, queryContext?: unknown) => string
 ```
+Custom function to modify identifiers before conversion. Runs when keys are still in application format, on the way to the database.
 
-A function which will run before modifications made by this library, when keys are still in application format on the way to the database.
-
-#### appPostProcessResponse
+### `appPostProcessResponse`
 
 ```javascript
 (result: unknown, queryContext?: unknown) => unknown
 ```
+Custom function to process the response after conversion. Runs when keys are in application format, after the data is retrieved from the database.
 
-A function which will run after modifications made by this library, when keys are in application format.
+### `appStringcase`
 
-#### appStringcase
+**Default: 'camelcase'**
 
-```
-default 'camelcase'
-```
+Define how keys are converted when returning to the application. Accepts a string (e.g., `'camelcase'`) found in [stringcase](https://www.npmjs.com/package/stringcase), or a custom function.
 
-A function or a string which describes how keys should re-enter your application from the database. If a string is provided keys will be modified by their respective function found in [npm stringcase](https://www.npmjs.com/package/stringcase). Alternatively a function can be passed, taking the string in its current state which will give you more control to suit your needs.
+This parameter may be an array describing more than one alteration in sequence.
 
-This parameter may be an array describing more than one alteration in sequence. eg `['snakecase', 'uppercase']`.
-
-#### stringcase
-
-```
-default 'snakecase'
+```javascript
+appStringcase: ['snakecase', 'uppercase']
 ```
 
-A function or a string which describes how keys should be modified when headed to the database. This attribute may also be be an array and operates very similarly to `appStringcase` above.
+### `stringcase`
 
-#### recursiveStringcase
+**Default: 'snakecase'**
+
+Define how keys are modified when heading to the database. This attribute may also be be an array and operates closely to how `appStringcase` operates above.
+
+### `recursiveStringcase`
 
 ```javascript
 (value: object, path: string, queryContext?: unknown) => boolean
 ```
+A function to control nested object conversions (useful for subqueries or JSON fields). The function receives the object and its path in dot notation. Return `true` to convert the object.
 
-A function which can be used to perform conversion on nested objects returned from the database. This is useful in case you are using sub queries or just want your processed JSON fields converted. If true is returned the object is converted.
+---
 
-`recursiveStringcase: () => true`
+## 🔄 Upgrade Guide (1.4.0 → 1.5.0)
 
-The first parameter is the object that can be converted. The second parameter will give you the path to the object in database format in dot notation prefixed with root ie. `"root.name.name"`.
+Starting from version 1.5.0, **TypeScript support** is available out-of-the-box.
 
-`recursiveStringcase: (value, path) => path === 'root.my_field'`
+---
 
-## Contribute
+## 🤝 Contributing
 
-Sure! Except for anything with a dependency.
+Contributions are welcome! Feel free to open an issue or submit a pull request. Note that we avoid dependencies whenever possible.

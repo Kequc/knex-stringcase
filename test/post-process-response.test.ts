@@ -7,7 +7,7 @@ describe('postProcessResponse', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepStrictEqual(postProcessResponse({
+        assert.deepEqual(postProcessResponse({
             test: 'hi',
             test_two: now,
             test_three: 11,
@@ -22,7 +22,7 @@ describe('postProcessResponse', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepStrictEqual(postProcessResponse([{
+        assert.deepEqual(postProcessResponse([{
             test: {
                 test_two: now,
             },
@@ -39,7 +39,7 @@ describe('postProcessResponse', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepStrictEqual(postProcessResponse(['hi', now, 11]), ['hi', now, 11]);
+        assert.deepEqual(postProcessResponse(['hi', now, 11]), ['hi', now, 11]);
     });
 
     it('converts keys when response is an instance of a class', () => {
@@ -58,7 +58,7 @@ describe('postProcessResponse', () => {
             }
         }
 
-        assert.deepStrictEqual(postProcessResponse(new TextRow()), {
+        assert.deepEqual(postProcessResponse(new TextRow()), {
             test: 'hi',
             testTwo: now,
             testThree: 11,
@@ -71,23 +71,23 @@ describe('postProcessResponse', () => {
         });
         const now = new Date();
 
-        assert.deepStrictEqual(postProcessResponse({ 'TEST': 'hi' }), { tes: 'hi' });
-        assert.deepStrictEqual(postProcessResponse({ 'TEST_TWO': now }), { testtw: now });
-        assert.deepStrictEqual(postProcessResponse({ 'TEST_THREE': 11 }), { testthre: 11 });
+        assert.deepEqual(postProcessResponse({ 'TEST': 'hi' }), { tes: 'hi' });
+        assert.deepEqual(postProcessResponse({ 'TEST_TWO': now }), { testtw: now });
+        assert.deepEqual(postProcessResponse({ 'TEST_THREE': 11 }), { testthre: 11 });
     });
 
     it('runs before after functions', () => {
         const { postProcessResponse } = knexStringcase({
-            postProcessResponse(result) {
+            postProcessResponse: (result) => {
                 return Object.assign({ what_this: 'ahhhhhhh' }, result);
             },
-            appPostProcessResponse(result) {
+            appPostProcessResponse: (result) => {
                 return Object.assign({ what_this: 'ah again' }, result);
             },
         });
         const now = new Date();
 
-        assert.deepStrictEqual(postProcessResponse({
+        assert.deepEqual(postProcessResponse({
             test: 'hi',
             test_two: now,
             test_three: 11,
@@ -104,7 +104,7 @@ describe('postProcessResponse', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepStrictEqual(postProcessResponse([{
+        assert.deepEqual(postProcessResponse([{
             test: 'hi',
             test_two: now,
             test_three: 11,

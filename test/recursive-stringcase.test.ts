@@ -5,12 +5,12 @@ import knexStringcase from '../src/main';
 describe('recursiveStringcase', () => {
     it('converts specified objects', () => {
         const { postProcessResponse } = knexStringcase({
-            recursiveStringcase(value) {
-                return (value as Record<string, unknown>).convert_this === true;
+            recursiveStringcase: (value) => {
+                return (value as any).convert_this === true;
             },
         });
 
-        assert.deepStrictEqual(postProcessResponse([{
+        assert.deepEqual(postProcessResponse([{
             test_two: {
                 is_skipped: 'hi',
             },
@@ -29,12 +29,12 @@ describe('recursiveStringcase', () => {
 
     it('converts using specified name', () => {
         const { postProcessResponse } = knexStringcase({
-            recursiveStringcase(value, path) {
+            recursiveStringcase: (value, path) => {
                 return path === 'root.test_three';
             },
         });
 
-        assert.deepStrictEqual(postProcessResponse([{
+        assert.deepEqual(postProcessResponse([{
             test: {
                 test_two: 'hi',
             },
@@ -53,12 +53,12 @@ describe('recursiveStringcase', () => {
 
     it('converts using specified deep name', () => {
         const { postProcessResponse } = knexStringcase({
-            recursiveStringcase(value, path) {
+            recursiveStringcase: (value, path) => {
                 return path.startsWith('root.test') && path !== 'root.test.test_two';
             },
         });
 
-        assert.deepStrictEqual(postProcessResponse([{
+        assert.deepEqual(postProcessResponse([{
             test: {
                 test_two: { test_three: 'hi' },
                 test_four: { test_five: 'there' },
@@ -73,13 +73,13 @@ describe('recursiveStringcase', () => {
 
     it('converts using queryContext', () => {
         const { postProcessResponse } = knexStringcase({
-            recursiveStringcase(value, path, queryContext) {
+            recursiveStringcase: (value, path, queryContext) => {
                 return queryContext === path;
             },
         });
         const queryContext = 'root.test_three';
 
-        assert.deepStrictEqual(postProcessResponse([{
+        assert.deepEqual(postProcessResponse([{
             test: {
                 test_two: 'hi',
             },
@@ -98,12 +98,12 @@ describe('recursiveStringcase', () => {
 
     it('converts deep results', () => {
         const { postProcessResponse } = knexStringcase({
-            recursiveStringcase() {
+            recursiveStringcase: () => {
                 return true;
             },
         });
 
-        assert.deepStrictEqual(postProcessResponse([{
+        assert.deepEqual(postProcessResponse([{
             test: {
                 test_two: 'hi',
             },
@@ -122,12 +122,12 @@ describe('recursiveStringcase', () => {
 
     it('converts arrays', () => {
         const { postProcessResponse } = knexStringcase({
-            recursiveStringcase(value, path) {
+            recursiveStringcase: (value, path) => {
                 return path === 'root.test';
             },
         });
 
-        assert.deepStrictEqual(postProcessResponse([{
+        assert.deepEqual(postProcessResponse([{
             test: [{
                 test_two: 'hi',
             }, {

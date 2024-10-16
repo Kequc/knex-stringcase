@@ -4,17 +4,17 @@ import knexStringcase from '../src/main';
 
 describe('main', () => {
     it('runs without parameters', () => {
-        const result = knexStringcase();
+        const options = knexStringcase();
 
-        assert.strict.equal(typeof result, 'object');
-        assert.strict.equal(typeof result.postProcessResponse, 'function');
-        assert.strict.equal(typeof result.wrapIdentifier, 'function');
+        assert.equal(typeof options, 'object');
+        assert.equal(typeof options.postProcessResponse, 'function');
+        assert.equal(typeof options.wrapIdentifier, 'function');
     });
 
     it('returns a new object', () => {
         const config = {};
 
-        assert.strict.notEqual(knexStringcase(config), config);
+        assert.notEqual(knexStringcase(config), config);
     });
 
     it('runs with parameters', () => {
@@ -26,22 +26,22 @@ describe('main', () => {
             otherOption: 'hello',
             recursiveStringcase: () => false,
         };
-        const result = knexStringcase(config);
+        const options = knexStringcase(config);
 
-        assert.strict.equal(typeof result, 'object');
-        assert.strict.equal(typeof result.postProcessResponse, 'function');
-        assert.strict.equal(typeof result.wrapIdentifier, 'function');
+        assert.equal(typeof options, 'object');
+        assert.equal(typeof options.postProcessResponse, 'function');
+        assert.equal(typeof options.wrapIdentifier, 'function');
+        assert.equal(options.otherOption, 'hello');
 
-        assert.strict.equal(result.otherOption, 'hello');
         // @ts-ignore
-        assert.strict.equal(result.appWrapIdentifier, undefined);
+        assert.equal(options.appWrapIdentifier, undefined);
         // @ts-ignore
-        assert.strict.equal(result.appPostProcessResponse, undefined);
+        assert.equal(options.appPostProcessResponse, undefined);
         // @ts-ignore
-        assert.strict.equal(result.appStringcase, undefined);
+        assert.equal(options.appStringcase, undefined);
         // @ts-ignore
-        assert.strict.equal(result.stringcase, undefined);
+        assert.equal(options.stringcase, undefined);
         // @ts-ignore
-        assert.strict.equal(result.recursiveStringcase, undefined);
+        assert.equal(options.recursiveStringcase, undefined);
     });
 });

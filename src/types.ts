@@ -1,4 +1,4 @@
-export type Converter = (input: string) => string;
+export type Converter = (value: string) => string;
 
 export type Modifier = string | Converter;
 
@@ -6,7 +6,7 @@ export type RecursiveStringcase = (value: object, path: string, queryContext?: u
 
 export type KeyConverter = (value: unknown, path: string, queryContext?: unknown) => unknown;
 
-export type WrapIdentifier = (value: string, origImpl: (value: string) => string, queryContext?: unknown) => string;
+export type WrapIdentifier = (value: string, origImpl: Converter, queryContext?: unknown) => string;
 
 export type PostProcessResponse = (result: unknown, queryContext?: unknown) => unknown;
 
@@ -14,7 +14,19 @@ export type AppWrapIdentifier = (value: string, queryContext?: unknown) => strin
 
 export type AppPostProcessResponse = (result: unknown, queryContext?: unknown) => unknown;
 
-export interface KnexStringcaseConfig {
+type ExcludedKeys =
+    | 'appWrapIdentifier'
+    | 'appPostProcessResponse'
+    | 'appStringcase'
+    | 'stringcase'
+    | 'recursiveStringcase';
+
+export type KnexOptions<T> = Omit<T, ExcludedKeys> & {
+    wrapIdentifier: WrapIdentifier;
+    postProcessResponse: PostProcessResponse;
+};
+
+export interface KnexStringcaseOptions {
     [key: string]: unknown;
     appWrapIdentifier?: AppWrapIdentifier;
     appPostProcessResponse?: AppPostProcessResponse;
@@ -23,9 +35,4 @@ export interface KnexStringcaseConfig {
     recursiveStringcase?: RecursiveStringcase;
     wrapIdentifier?: WrapIdentifier;
     postProcessResponse?: PostProcessResponse;
-}
-
-export interface KnexOptions {
-    wrapIdentifier: WrapIdentifier;
-    postProcessResponse: PostProcessResponse;
 }

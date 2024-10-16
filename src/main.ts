@@ -1,12 +1,19 @@
 import converterFactory from './converter-factory';
 import keyConverterFactory from './key-converter-factory';
-import { AppPostProcessResponse, AppWrapIdentifier, Converter, KeyConverter, KnexOptions, KnexStringcaseConfig, PostProcessResponse, WrapIdentifier } from './types';
+import {
+    AppPostProcessResponse,
+    AppWrapIdentifier,
+    Converter,
+    KeyConverter,
+    KnexOptions,
+    KnexStringcaseOptions,
+    PostProcessResponse,
+    WrapIdentifier,
+} from './types';
 
-type ExcludedKeys = 'appWrapIdentifier' | 'appPostProcessResponse' | 'appStringcase' | 'stringcase' | 'recursiveStringcase';
+// Add conversion to knex options
 
-// Add conversions to knex config
-
-export default function knexStringcase<T extends KnexStringcaseConfig>(config?: T) {
+export default function knexStringcase<T extends KnexStringcaseOptions>(config?: T) {
     const options = Object.assign({}, config); // clone
 
     delete options.appWrapIdentifier;
@@ -30,7 +37,7 @@ export default function knexStringcase<T extends KnexStringcaseConfig>(config?: 
         config?.appPostProcessResponse,
     );
 
-    return options as Omit<T, ExcludedKeys> & KnexOptions;
+    return options as KnexOptions<T>;
 }
 
 // Convert value for database
