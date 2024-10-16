@@ -4,8 +4,6 @@
 
 By default, this library assumes your database uses **snake_case** and your Node.js application uses **camelCase**. However, these settings can be changed.
 
----
-
 ## 🚀 Why Knex Stringcase?
 
 If your database columns follow a snake_case convention (a common practice), you might want to convert them into a more JavaScript-friendly camelCase for use in your application.
@@ -30,13 +28,9 @@ This will return an object:
 
 This is maps database field `is_verified` to `isVerified` and allows you to refer to `deleted_at` using `deletedAt`. No more snake_case to camelCase troubles!
 
----
-
 ## 🔧 How It Works
 
 By leveraging knex’s built-in configuration options: [`wrapIdentifier`](http://knexjs.org/#Installation-wrap-identifier) and [`postProcessResponse`](http://knexjs.org/#Installation-post-process-response). You can use these configuration options yourself, this library just makes the conversions simpler.
-
----
 
 ## 🌟 Features
 
@@ -45,8 +39,6 @@ By leveraging knex’s built-in configuration options: [`wrapIdentifier`](http:/
 - Extend and modify conversion logic with custom functions.
 - Handles nested objects and subqueries.
 
----
-
 ## 📦 Installation
 
 Use npm (or yarn, pnpm, etc.):
@@ -54,8 +46,6 @@ Use npm (or yarn, pnpm, etc.):
 ```bash
 npm i knex-stringcase
 ```
-
----
 
 ## 📘 Usage
 
@@ -78,8 +68,6 @@ const db = knex({
 ```
 
 This library overwrites `wrapIdentifier` and `postProcessResponse` pass them as library options instead, they will be run when keys are in database format. If you wish to run when keys are in application format use `appWrapIdentifier` and `appPostProcessResponse`.
-
----
 
 ## 📰 Library Options
 
@@ -135,18 +123,12 @@ Custom function to process the response after conversion. Runs when keys are in 
 ```
 A function to control nested object conversions (useful for subqueries or JSON fields). The function receives the object and its path in dot notation. Return `true` to convert the object.
 
----
-
 ## 🔄 Upgrade Guide (1.5.0 → 1.5.5)
 
 `1.5.5`: `knexStringcase()` no longer has to wrap your entire knex configuration instead you can insert it into the options.
 
 `1.5.0`: **TypeScript support** is available out-of-the-box.
 
----
-
 ## 🤝 Contributing
 
 Contributions are welcome! Feel free to open an issue or submit a pull request. Note that we avoid dependencies whenever possible.
-
----
