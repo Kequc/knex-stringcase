@@ -1,15 +1,18 @@
 import stringcase from 'stringcase';
-import { Converter, Modifier } from './types';
+import type { Converter, Modifier } from './types.ts';
 
 // String converter
 
-export default function converterFactory (arr: Modifier | Modifier[]): Converter {
+export default function converterFactory(arr: Modifier | Modifier[]): Converter {
     const modifiers = (Array.isArray(arr) ? arr : [arr]).map(getModifier);
     const cache = new Map<string, string>();
 
-    return function converter (value: string): string {
+    return function converter(value: string): string {
         if (!cache.has(value)) {
-            cache.set(value, modifiers.reduce((acc, cur) => cur(acc), value));
+            cache.set(
+                value,
+                modifiers.reduce((acc, cur) => cur(acc), value),
+            );
         }
         return cache.get(value) as string;
     };
@@ -17,17 +20,20 @@ export default function converterFactory (arr: Modifier | Modifier[]): Converter
 
 // Function for use in converting strings
 
-function getModifier (modifier: Modifier): Converter {
+function getModifier(modifier: Modifier): Converter {
     switch (typeof modifier) {
-    case 'string': return getStringcase(modifier);
-    case 'function': return modifier;
-    default: throw new Error('Conversion must be string or function');
+        case 'string':
+            return getStringcase(modifier);
+        case 'function':
+            return modifier;
+        default:
+            throw new Error('Conversion must be string or function');
     }
 }
 
 // Function from stringcase
 
-function getStringcase (name: string): Converter {
+function getStringcase(name: string): Converter {
     const modifier = stringcase[name];
 
     if (typeof modifier === 'function') {

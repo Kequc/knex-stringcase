@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import knexStringcase from '../src/main';
+import knexStringcase from '../src/main.ts';
 
 describe('main', () => {
     it('runs without parameters', () => {

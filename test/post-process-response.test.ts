@@ -1,38 +1,48 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import knexStringcase from '../src/main';
+import knexStringcase from '../src/main.ts';
 
 describe('postProcessResponse', () => {
     it('converts keys', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse({
-            test: 'hi',
-            test_two: now,
-            test_three: 11,
-        }), {
-            test: 'hi',
-            testTwo: now,
-            testThree: 11,
-        });
+        assert.deepEqual(
+            postProcessResponse({
+                test: 'hi',
+                test_two: now,
+                test_three: 11,
+            }),
+            {
+                test: 'hi',
+                testTwo: now,
+                testThree: 11,
+            },
+        );
     });
 
     it('does not deep converts keys', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse([{
-            test: {
-                test_two: now,
-            },
-            test_three: 11,
-        }]), [{
-            test: {
-                test_two: now,
-            },
-            testThree: 11,
-        }]);
+        assert.deepEqual(
+            postProcessResponse([
+                {
+                    test: {
+                        test_two: now,
+                    },
+                    test_three: 11,
+                },
+            ]),
+            [
+                {
+                    test: {
+                        test_two: now,
+                    },
+                    testThree: 11,
+                },
+            ],
+        );
     });
 
     it('returns raw values', () => {
@@ -67,13 +77,17 @@ describe('postProcessResponse', () => {
 
     it('customizes conversion', () => {
         const { postProcessResponse } = knexStringcase({
-            appStringcase: ['camelcase', 'lowercase', value => value.slice(0, -1)],
+            appStringcase: ['camelcase', 'lowercase', (value) => value.slice(0, -1)],
         });
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse({ 'TEST': 'hi' }), { tes: 'hi' });
-        assert.deepEqual(postProcessResponse({ 'TEST_TWO': now }), { testtw: now });
-        assert.deepEqual(postProcessResponse({ 'TEST_THREE': 11 }), { testthre: 11 });
+        assert.deepEqual(postProcessResponse({ TEST: 'hi' }), { tes: 'hi' });
+        assert.deepEqual(postProcessResponse({ TEST_TWO: now }), {
+            testtw: now,
+        });
+        assert.deepEqual(postProcessResponse({ TEST_THREE: 11 }), {
+            testthre: 11,
+        });
     });
 
     it('runs before after functions', () => {
@@ -87,39 +101,51 @@ describe('postProcessResponse', () => {
         });
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse({
-            test: 'hi',
-            test_two: now,
-            test_three: 11,
-        }), {
-            test: 'hi',
-            testTwo: now,
-            testThree: 11,
-            whatThis: 'ahhhhhhh',
-            what_this: 'ah again',
-        });
+        assert.deepEqual(
+            postProcessResponse({
+                test: 'hi',
+                test_two: now,
+                test_three: 11,
+            }),
+            {
+                test: 'hi',
+                testTwo: now,
+                testThree: 11,
+                whatThis: 'ahhhhhhh',
+                what_this: 'ah again',
+            },
+        );
     });
 
     it('converts the same key multiple times', () => {
         const { postProcessResponse } = knexStringcase();
         const now = new Date();
 
-        assert.deepEqual(postProcessResponse([{
-            test: 'hi',
-            test_two: now,
-            test_three: 11,
-        }, {
-            test: 'hi',
-            test_two: now,
-            test_three: 11,
-        }]), [{
-            test: 'hi',
-            testTwo: now,
-            testThree: 11,
-        }, {
-            test: 'hi',
-            testTwo: now,
-            testThree: 11,
-        }]);
+        assert.deepEqual(
+            postProcessResponse([
+                {
+                    test: 'hi',
+                    test_two: now,
+                    test_three: 11,
+                },
+                {
+                    test: 'hi',
+                    test_two: now,
+                    test_three: 11,
+                },
+            ]),
+            [
+                {
+                    test: 'hi',
+                    testTwo: now,
+                    testThree: 11,
+                },
+                {
+                    test: 'hi',
+                    testTwo: now,
+                    testThree: 11,
+                },
+            ],
+        );
     });
 });

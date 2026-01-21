@@ -1,6 +1,6 @@
-import converterFactory from './converter-factory';
-import keyConverterFactory from './key-converter-factory';
-import {
+import converterFactory from './converter-factory.ts';
+import keyConverterFactory from './key-converter-factory.ts';
+import type {
     AppPostProcessResponse,
     AppWrapIdentifier,
     Converter,
@@ -9,7 +9,7 @@ import {
     KnexStringcaseOptions,
     PostProcessResponse,
     WrapIdentifier,
-} from './types';
+} from './types.ts';
 
 // Add conversion to knex options
 
@@ -29,10 +29,7 @@ export default function knexStringcase<T extends KnexStringcaseOptions>(config?:
     );
 
     options.postProcessResponse = postProcessResponseFactory(
-        keyConverterFactory(
-            converterFactory(config?.appStringcase ?? 'camelcase'),
-            config?.recursiveStringcase,
-        ),
+        keyConverterFactory(converterFactory(config?.appStringcase ?? 'camelcase'), config?.recursiveStringcase),
         config?.postProcessResponse,
         config?.appPostProcessResponse,
     );
@@ -42,12 +39,12 @@ export default function knexStringcase<T extends KnexStringcaseOptions>(config?:
 
 // Convert value for database
 
-function wrapIdentifierFactory (
+function wrapIdentifierFactory(
     converter: Converter,
     before?: AppWrapIdentifier,
     after?: WrapIdentifier,
 ): WrapIdentifier {
-    return function wrapIdentifier (value, origImpl, queryContext) {
+    return function wrapIdentifier(value, origImpl, queryContext) {
         let output = value;
 
         if (typeof before === 'function') {
@@ -68,12 +65,12 @@ function wrapIdentifierFactory (
 
 // Process result from database
 
-function postProcessResponseFactory (
+function postProcessResponseFactory(
     keyConverter: KeyConverter,
     before?: PostProcessResponse,
     after?: AppPostProcessResponse,
 ): PostProcessResponse {
-    return function postProcessResponse (result, queryContext) {
+    return function postProcessResponse(result, queryContext) {
         let output = result;
 
         if (typeof before === 'function') {

@@ -1,17 +1,14 @@
-import { Converter, KeyConverter, RecursiveStringcase } from './types';
+import type { Converter, KeyConverter, RecursiveStringcase } from './types.ts';
 
 // String converter for keys of an object
 
-export default function keyConverterFactory (
-    converter: Converter,
-    isRecursive?: RecursiveStringcase,
-): KeyConverter {
-    return function keyConverter (value, path, queryContext): unknown {
+export default function keyConverterFactory(converter: Converter, isRecursive?: RecursiveStringcase): KeyConverter {
+    return function keyConverter(value, path, queryContext): unknown {
         if (isStatic(value, path, isRecursive, queryContext)) {
             return value;
         }
         if (Array.isArray(value)) {
-            return value.map(item => keyConverter(item, path, queryContext));
+            return value.map((item) => keyConverter(item, path, queryContext));
         }
 
         const input = value as Record<string, unknown>;
@@ -28,12 +25,7 @@ export default function keyConverterFactory (
 
 // Value remains unchanged
 
-function isStatic (
-    value: unknown,
-    path: string,
-    isRecursive?: RecursiveStringcase,
-    queryContext?: unknown,
-): boolean {
+function isStatic(value: unknown, path: string, isRecursive?: RecursiveStringcase, queryContext?: unknown): boolean {
     if (typeof value !== 'object' || value === null) return true;
     if (value instanceof Date) return true;
     if (path === 'root') return false;

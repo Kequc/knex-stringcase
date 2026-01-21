@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import knexStringcase from '../src/main';
+import knexStringcase from '../src/main.ts';
 
 describe('recursiveStringcase', () => {
     it('converts specified objects', () => {
@@ -10,21 +10,28 @@ describe('recursiveStringcase', () => {
             },
         });
 
-        assert.deepEqual(postProcessResponse([{
-            test_two: {
-                is_skipped: 'hi',
-            },
-            test_three: {
-                convert_this: true,
-            },
-        }]), [{
-            testTwo: {
-                is_skipped: 'hi',
-            },
-            testThree: {
-                convertThis: true,
-            },
-        }]);
+        assert.deepEqual(
+            postProcessResponse([
+                {
+                    test_two: {
+                        is_skipped: 'hi',
+                    },
+                    test_three: {
+                        convert_this: true,
+                    },
+                },
+            ]),
+            [
+                {
+                    testTwo: {
+                        is_skipped: 'hi',
+                    },
+                    testThree: {
+                        convertThis: true,
+                    },
+                },
+            ],
+        );
     });
 
     it('converts using specified name', () => {
@@ -34,21 +41,28 @@ describe('recursiveStringcase', () => {
             },
         });
 
-        assert.deepEqual(postProcessResponse([{
-            test: {
-                test_two: 'hi',
-            },
-            test_three: {
-                test_four: 'there',
-            },
-        }]), [{
-            test: {
-                test_two: 'hi',
-            },
-            testThree: {
-                testFour: 'there',
-            },
-        }]);
+        assert.deepEqual(
+            postProcessResponse([
+                {
+                    test: {
+                        test_two: 'hi',
+                    },
+                    test_three: {
+                        test_four: 'there',
+                    },
+                },
+            ]),
+            [
+                {
+                    test: {
+                        test_two: 'hi',
+                    },
+                    testThree: {
+                        testFour: 'there',
+                    },
+                },
+            ],
+        );
     });
 
     it('converts using specified deep name', () => {
@@ -58,17 +72,24 @@ describe('recursiveStringcase', () => {
             },
         });
 
-        assert.deepEqual(postProcessResponse([{
-            test: {
-                test_two: { test_three: 'hi' },
-                test_four: { test_five: 'there' },
-            },
-        }]), [{
-            test: {
-                testTwo: { test_three: 'hi' },
-                testFour: { testFive: 'there' },
-            },
-        }]);
+        assert.deepEqual(
+            postProcessResponse([
+                {
+                    test: {
+                        test_two: { test_three: 'hi' },
+                        test_four: { test_five: 'there' },
+                    },
+                },
+            ]),
+            [
+                {
+                    test: {
+                        testTwo: { test_three: 'hi' },
+                        testFour: { testFive: 'there' },
+                    },
+                },
+            ],
+        );
     });
 
     it('converts using queryContext', () => {
@@ -79,21 +100,31 @@ describe('recursiveStringcase', () => {
         });
         const queryContext = 'root.test_three';
 
-        assert.deepEqual(postProcessResponse([{
-            test: {
-                test_two: 'hi',
-            },
-            test_three: {
-                test_four: 'there',
-            },
-        }], queryContext), [{
-            test: {
-                test_two: 'hi',
-            },
-            testThree: {
-                testFour: 'there',
-            },
-        }]);
+        assert.deepEqual(
+            postProcessResponse(
+                [
+                    {
+                        test: {
+                            test_two: 'hi',
+                        },
+                        test_three: {
+                            test_four: 'there',
+                        },
+                    },
+                ],
+                queryContext,
+            ),
+            [
+                {
+                    test: {
+                        test_two: 'hi',
+                    },
+                    testThree: {
+                        testFour: 'there',
+                    },
+                },
+            ],
+        );
     });
 
     it('converts deep results', () => {
@@ -103,21 +134,28 @@ describe('recursiveStringcase', () => {
             },
         });
 
-        assert.deepEqual(postProcessResponse([{
-            test: {
-                test_two: 'hi',
-            },
-            test_three: {
-                test_four: 'there',
-            },
-        }]), [{
-            test: {
-                testTwo: 'hi',
-            },
-            testThree: {
-                testFour: 'there',
-            },
-        }]);
+        assert.deepEqual(
+            postProcessResponse([
+                {
+                    test: {
+                        test_two: 'hi',
+                    },
+                    test_three: {
+                        test_four: 'there',
+                    },
+                },
+            ]),
+            [
+                {
+                    test: {
+                        testTwo: 'hi',
+                    },
+                    testThree: {
+                        testFour: 'there',
+                    },
+                },
+            ],
+        );
     });
 
     it('converts arrays', () => {
@@ -127,18 +165,31 @@ describe('recursiveStringcase', () => {
             },
         });
 
-        assert.deepEqual(postProcessResponse([{
-            test: [{
-                test_two: 'hi',
-            }, {
-                test_four: 'there',
-            }],
-        }]), [{
-            test: [{
-                testTwo: 'hi',
-            }, {
-                testFour: 'there',
-            }],
-        }]);
+        assert.deepEqual(
+            postProcessResponse([
+                {
+                    test: [
+                        {
+                            test_two: 'hi',
+                        },
+                        {
+                            test_four: 'there',
+                        },
+                    ],
+                },
+            ]),
+            [
+                {
+                    test: [
+                        {
+                            testTwo: 'hi',
+                        },
+                        {
+                            testFour: 'there',
+                        },
+                    ],
+                },
+            ],
+        );
     });
 });
